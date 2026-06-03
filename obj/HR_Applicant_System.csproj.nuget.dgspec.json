@@ -69,6 +69,10 @@
             "CommunityToolkit.Mvvm": {
               "target": "Package",
               "version": "[8.4.1, )"
+            },
+            "MySql.Data": {
+              "target": "Package",
+              "version": "[9.7.0, )"
             }
           },
           "imports": [

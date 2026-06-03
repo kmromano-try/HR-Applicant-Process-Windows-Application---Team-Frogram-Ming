@@ -1,0 +1,11 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="HR_Applicant_System.Views.AdminView"
+        Title="Admin Control Panel" Width="800" Height="600">
+    <Grid>
+        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+            <TextBlock Text="Admin / Manager Dashboard" FontSize="30" FontWeight="Bold" Foreground="Red"/>
+            <TextBlock Text="System Oversight Active." HorizontalAlignment="Center"/>
+        </StackPanel>
+    </Grid>
+</Window>
