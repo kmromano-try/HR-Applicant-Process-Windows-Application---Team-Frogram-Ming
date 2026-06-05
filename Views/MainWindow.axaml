@@ -1,20 +1,41 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:vm="using:HR_Applicant_System.ViewModels"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-        x:Class="HR_Applicant_System.Views.MainWindow"
-        x:DataType="vm:MainWindowViewModel"
-        Icon="/Assets/avalonia-logo.ico"
-        Title="HR_Applicant_System">
+        x:Class="HR_Applicant_System.MainWindow"
+        Width="900"
+        Height="600"
+        Title="HR Applicant System">
 
-    <Design.DataContext>
-        <!-- This only sets the DataContext for the previewer in an IDE,
-             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
-        <vm:MainWindowViewModel/>
-    </Design.DataContext>
+	<Grid RowDefinitions="120,*" Background="#F3F4F6">
 
-    <TextBlock Text="{Binding Greeting}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+		<Border Background="#1F2937" Padding="20">
+			<TextBlock Text="HR Applicant Process System"
+                       Foreground="White"
+                       FontSize="30"
+                       FontWeight="Bold"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"/>
+		</Border>
 
+		<StackPanel Grid.Row="1"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Spacing="15"
+                    Width="300">
+
+			<Button Content="Applicant Login"
+                    Height="45"/>
+
+			<Button Content="Applicant Registration"
+                    Height="45"/>
+
+			<Button Content="HR Staff Login"
+                    Height="45"/>
+
+			<Button Content="Admin / Manager Login"
+                    Height="45"
+                    Click="AdminLogin_Click"/>
+
+		</StackPanel>
+
+	</Grid>
 </Window>
