@@ -18,32 +18,33 @@
                            Margin="0,0,0,20"/>
 
 				<Button Content="Dashboard"
-                        Height="42"/>
+                        Height="42"
+                        Click="Dashboard_Click"/>
 
 				<Button Content="Create HR Staff Account"
-        Height="42"
-        Click="CreateStaff_Click"/>
+                        Height="42"
+                        Click="CreateStaff_Click"/>
 
 				<Button Content="Create Job Vacancy"
-        Height="42"
-        Click="CreateJob_Click"/>
+                        Height="42"
+                        Click="CreateJob_Click"/>
 
 				<Button Content="Staff Approved Queue"
-        Height="42"
-        Click="FinalReview_Click"/>
+                        Height="42"
+                        Click="FinalReview_Click"/>
 
 				<Button Content="Staff Rejected Queue"
-        Height="42"
-        Click="RejectedQueue_Click"/>
+                        Height="42"
+                        Click="RejectedQueue_Click"/>
 
 				<Button Content="Reports"
-        Height="42"
-        Click="Reports_Click"/>
+                        Height="42"
+                        Click="Reports_Click"/>
 
 				<Button Content="Logout"
-        Height="42"
-        Margin="0,30,0,0"
-        Click="Logout_Click"/>
+                        Height="42"
+                        Margin="0,30,0,0"
+                        Click="Logout_Click"/>
 
 			</StackPanel>
 		</Border>
@@ -90,7 +91,9 @@
 								<TextBlock Text="Active Jobs"
                                            FontSize="16"
                                            Foreground="#6B7280"/>
-								<TextBlock Text="0"
+
+								<TextBlock x:Name="txtActiveJobsCount"
+                                           Text="0"
                                            FontSize="32"
                                            FontWeight="Bold"
                                            Foreground="#111827"/>
@@ -105,7 +108,9 @@
 								<TextBlock Text="For Final Review"
                                            FontSize="16"
                                            Foreground="#6B7280"/>
-								<TextBlock Text="0"
+
+								<TextBlock x:Name="txtFinalReviewCount"
+                                           Text="0"
                                            FontSize="32"
                                            FontWeight="Bold"
                                            Foreground="#111827"/>
@@ -120,7 +125,9 @@
 								<TextBlock Text="Rejected by Staff"
                                            FontSize="16"
                                            Foreground="#6B7280"/>
-								<TextBlock Text="0"
+
+								<TextBlock x:Name="txtRejectedCount"
+                                           Text="0"
                                            FontSize="32"
                                            FontWeight="Bold"
                                            Foreground="#111827"/>
@@ -135,3 +142,4 @@
 		</Grid>
 	</Grid>
 </Window>
+
