@@ -1,0 +1,2 @@
+/Users/hgwhsnri/Desktop/Capstone/obj/Debug/net8.0/HR_Applicant_System.csproj.AssemblyReference.cache
+/Users/hgwhsnri/Desktop/Capstone/obj/Debug/net8.0/Avalonia/Resources.Inputs.cache

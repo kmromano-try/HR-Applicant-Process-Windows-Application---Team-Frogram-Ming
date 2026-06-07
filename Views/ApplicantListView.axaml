@@ -1,0 +1,50 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:HR_Applicant_System.ViewModels"
+             x:Class="HR_Applicant_System.Views.ApplicantListView"
+             x:DataType="vm:ApplicantListViewModel">
+
+    <TabControl Background="#f8f9fa">
+        
+        <TabItem Header="My Profile" FontSize="14" FontWeight="SemiBold">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel Margin="30" Spacing="15" MaxWidth="500" HorizontalAlignment="Left">
+                    <TextBlock Text="HR Staff Personal Profile" FontSize="20" FontWeight="Bold" Foreground="#212529"/>
+                    
+                    <Label Content="Account Email (Read-Only)"/>
+                    <TextBox Text="{Binding StaffEmail}" IsReadOnly="True" Background="#e9ecef"/>
+                    
+                    <Label Content="Full Name"/>
+                    <TextBox Text="{Binding FullName}" Watermark="Enter your complete legal name"/>
+                    
+                    <Label Content="Birthdate"/>
+                    <DatePicker SelectedDate="{Binding Birthdate}"/>
+                    
+                    <Label Content="Department"/>
+                    <TextBox Text="{Binding Department}" Watermark="Assigned Division"/>
+                    
+                    <Label Content="Biography Notes"/>
+                    <TextBox Text="{Binding Bio}" Height="100" TextWrapping="Wrap" Watermark="Provide a brief summary profile..."/>
+                    
+                    <Button Content="Save Profile" Command="{Binding SaveProfile}" Background="#198754" Foreground="White" Padding="15,8" HorizontalAlignment="Right"/>
+                </StackPanel>
+            </ScrollViewer>
+        </TabItem>
+
+        <TabItem Header="Main Dashboard" FontSize="14" FontWeight="SemiBold">
+            <Grid RowDefinitions="Auto, *">
+                <Border Grid.Row="0" Background="#212529" Padding="15">
+                    <Grid ColumnDefinitions="*, Auto">
+                        <TextBlock Grid.Column="0" Text="HR CAPSTONE EVALUATION PORTAL" Foreground="White" FontSize="16" FontWeight="Bold" VerticalAlignment="Center"/>
+                        <Button Grid.Column="1" Content="Sync Workspace Data" Command="{Binding RefreshDashboard}" Background="#0d6efd" Foreground="White"/>
+                    </Grid>
+                </Border>
+                
+                <TabControl Grid.Row="1" Margin="10">
+                </TabControl>
+            </Grid>
+        </TabItem>
+        
+    </TabControl>
+    
+</UserControl>
