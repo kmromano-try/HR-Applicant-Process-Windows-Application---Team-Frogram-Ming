@@ -30,5 +30,6 @@
     </PackageReference>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.1" />
     <PackageReference Include="MySql.Data" Version="9.7.0" />
+    <PackageReference Include="ReactiveUI" Version="23.2.28" />
   </ItemGroup>
 </Project>

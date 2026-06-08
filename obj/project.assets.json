@@ -360,6 +360,22 @@
           "buildTransitive/CommunityToolkit.Mvvm.targets": {}
         }
       },
+      "DynamicData/9.4.31": {
+        "type": "package",
+        "dependencies": {
+          "System.Reactive": "6.1.0"
+        },
+        "compile": {
+          "lib/net10.0/DynamicData.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net10.0/DynamicData.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "Google.Protobuf/3.32.0": {
         "type": "package",
         "compile": {
@@ -651,6 +667,24 @@
           }
         }
       },
+      "ReactiveUI/23.2.28": {
+        "type": "package",
+        "dependencies": {
+          "DynamicData": "9.4.31",
+          "Splat": "19.4.1",
+          "System.Reactive": "6.1.0"
+        },
+        "compile": {
+          "lib/net10.0/ReactiveUI.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net10.0/ReactiveUI.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "SkiaSharp/3.119.4": {
         "type": "package",
         "dependencies": {
@@ -792,6 +826,68 @@
           }
         }
       },
+      "Splat/19.4.1": {
+        "type": "package",
+        "dependencies": {
+          "Splat.Builder": "19.4.1",
+          "Splat.Logging": "19.4.1"
+        },
+        "compile": {
+          "lib/net10.0/Splat.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net10.0/Splat.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "Splat.Builder/19.4.1": {
+        "type": "package",
+        "dependencies": {
+          "Splat.Core": "19.4.1"
+        },
+        "compile": {
+          "lib/net10.0/Splat.Builder.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net10.0/Splat.Builder.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "Splat.Core/19.4.1": {
+        "type": "package",
+        "compile": {
+          "lib/net10.0/Splat.Core.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net10.0/Splat.Core.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "Splat.Logging/19.4.1": {
+        "type": "package",
+        "dependencies": {
+          "Splat.Core": "19.4.1"
+        },
+        "compile": {
+          "lib/net10.0/Splat.Logging.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net10.0/Splat.Logging.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "System.Configuration.ConfigurationManager/8.0.0": {
         "type": "package",
         "dependencies": {
@@ -836,6 +932,22 @@
             "assetType": "runtime",
             "rid": "win"
           }
+        }
+      },
+      "System.Reactive/6.1.0": {
+        "type": "package",
+        "compile": {
+          "lib/net6.0/System.Reactive.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/System.Reactive.dll": {
+            "related": ".xml"
+          }
+        },
+        "build": {
+          "buildTransitive/net6.0/_._": {}
         }
       },
       "System.Security.Cryptography.ProtectedData/8.0.0": {
@@ -1344,6 +1456,34 @@
         "lib/netstandard2.1/CommunityToolkit.Mvvm.xml"
       ]
     },
+    "DynamicData/9.4.31": {
+      "sha512": "w2bT92Z5ADtnmtKiC9mzk21h7MtXtZEQKWFyytuHqhPBo7rKPWnvFk/xy1M/VA6XQTbCjRWMNV795w+RizFn4g==",
+      "type": "package",
+      "path": "dynamicdata/9.4.31",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE/LICENSE",
+        "README.md",
+        "dynamicdata.9.4.31.nupkg.sha512",
+        "dynamicdata.nuspec",
+        "lib/net10.0/DynamicData.dll",
+        "lib/net10.0/DynamicData.xml",
+        "lib/net462/DynamicData.dll",
+        "lib/net462/DynamicData.xml",
+        "lib/net6.0/DynamicData.dll",
+        "lib/net6.0/DynamicData.xml",
+        "lib/net7.0/DynamicData.dll",
+        "lib/net7.0/DynamicData.xml",
+        "lib/net8.0/DynamicData.dll",
+        "lib/net8.0/DynamicData.xml",
+        "lib/net9.0/DynamicData.dll",
+        "lib/net9.0/DynamicData.xml",
+        "lib/netstandard2.0/DynamicData.dll",
+        "lib/netstandard2.0/DynamicData.xml",
+        "logo.png"
+      ]
+    },
     "Google.Protobuf/3.32.0": {
       "sha512": "fsKxV5bhcvXmZi+cUo5+IxzRMBHwHeFO8G5utNa9f+Mu37kmfy8JcUVvWPt4cX7EuQWAjjHUjZqVl7nGSTRHRg==",
       "type": "package",
@@ -1761,6 +1901,58 @@
         "runtimes/win-x64/native/krbcc64.dll"
       ]
     },
+    "ReactiveUI/23.2.28": {
+      "sha512": "9sSuHnMcLTLhgMTQpQO6Jhz9Cbub3Pg44i6FS4Ot4UtbV8dpwMH3JGzGjT72oav4aSrJlmzbFyI87gX55oPzLA==",
+      "type": "package",
+      "path": "reactiveui/23.2.28",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE/LICENSE",
+        "README.md",
+        "lib/net10.0-android36.0/ReactiveUI.dll",
+        "lib/net10.0-android36.0/ReactiveUI.xml",
+        "lib/net10.0-ios26.0/ReactiveUI.dll",
+        "lib/net10.0-ios26.0/ReactiveUI.xml",
+        "lib/net10.0-maccatalyst26.0/ReactiveUI.dll",
+        "lib/net10.0-maccatalyst26.0/ReactiveUI.xml",
+        "lib/net10.0-macos26.0/ReactiveUI.dll",
+        "lib/net10.0-macos26.0/ReactiveUI.xml",
+        "lib/net10.0-tvos26.0/ReactiveUI.dll",
+        "lib/net10.0-tvos26.0/ReactiveUI.xml",
+        "lib/net10.0-windows10.0.19041/ReactiveUI.dll",
+        "lib/net10.0-windows10.0.19041/ReactiveUI.xml",
+        "lib/net10.0/ReactiveUI.dll",
+        "lib/net10.0/ReactiveUI.xml",
+        "lib/net462/ReactiveUI.dll",
+        "lib/net462/ReactiveUI.xml",
+        "lib/net472/ReactiveUI.dll",
+        "lib/net472/ReactiveUI.xml",
+        "lib/net481/ReactiveUI.dll",
+        "lib/net481/ReactiveUI.xml",
+        "lib/net8.0-windows10.0.19041/ReactiveUI.dll",
+        "lib/net8.0-windows10.0.19041/ReactiveUI.xml",
+        "lib/net8.0/ReactiveUI.dll",
+        "lib/net8.0/ReactiveUI.xml",
+        "lib/net9.0-android35.0/ReactiveUI.dll",
+        "lib/net9.0-android35.0/ReactiveUI.xml",
+        "lib/net9.0-ios18.0/ReactiveUI.dll",
+        "lib/net9.0-ios18.0/ReactiveUI.xml",
+        "lib/net9.0-maccatalyst18.0/ReactiveUI.dll",
+        "lib/net9.0-maccatalyst18.0/ReactiveUI.xml",
+        "lib/net9.0-macos15.0/ReactiveUI.dll",
+        "lib/net9.0-macos15.0/ReactiveUI.xml",
+        "lib/net9.0-tvos18.0/ReactiveUI.dll",
+        "lib/net9.0-tvos18.0/ReactiveUI.xml",
+        "lib/net9.0-windows10.0.19041/ReactiveUI.dll",
+        "lib/net9.0-windows10.0.19041/ReactiveUI.xml",
+        "lib/net9.0/ReactiveUI.dll",
+        "lib/net9.0/ReactiveUI.xml",
+        "logo.png",
+        "reactiveui.23.2.28.nupkg.sha512",
+        "reactiveui.nuspec"
+      ]
+    },
     "SkiaSharp/3.119.4": {
       "sha512": "53NOSUZ1Us+91Sm0uCkIivh/k7jOowRErZT2sIWwPFN9mLUvdxnE6rS4sWo4255+Rd2MWUSF+j0NMZHD6Cke+Q==",
       "type": "package",
@@ -1986,6 +2178,110 @@
         "skiasharp.nativeassets.win32.nuspec"
       ]
     },
+    "Splat/19.4.1": {
+      "sha512": "3VJOloRQA3bgbAxyNAi4mvLAR/mKH3h1agN5pIrUXvp9lAA2/rvUgxOYjt+GZ4suouLfXxkeKcS/bRjSclo1LQ==",
+      "type": "package",
+      "path": "splat/19.4.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE/LICENSE",
+        "README.md",
+        "lib/net10.0/Splat.dll",
+        "lib/net10.0/Splat.xml",
+        "lib/net462/Splat.dll",
+        "lib/net462/Splat.xml",
+        "lib/net472/Splat.dll",
+        "lib/net472/Splat.xml",
+        "lib/net481/Splat.dll",
+        "lib/net481/Splat.xml",
+        "lib/net8.0/Splat.dll",
+        "lib/net8.0/Splat.xml",
+        "lib/net9.0/Splat.dll",
+        "lib/net9.0/Splat.xml",
+        "logo.png",
+        "splat.19.4.1.nupkg.sha512",
+        "splat.nuspec"
+      ]
+    },
+    "Splat.Builder/19.4.1": {
+      "sha512": "9i0RLWEwfheI8aI17WaW8AJmNlFVi7LaX3XQwAavGqUaJJi7Vp5Eh9umWqVQYBLjs87ztVLmax/OMzMyW2igKQ==",
+      "type": "package",
+      "path": "splat.builder/19.4.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE/LICENSE",
+        "README.md",
+        "lib/net10.0/Splat.Builder.dll",
+        "lib/net10.0/Splat.Builder.xml",
+        "lib/net462/Splat.Builder.dll",
+        "lib/net462/Splat.Builder.xml",
+        "lib/net472/Splat.Builder.dll",
+        "lib/net472/Splat.Builder.xml",
+        "lib/net481/Splat.Builder.dll",
+        "lib/net481/Splat.Builder.xml",
+        "lib/net8.0/Splat.Builder.dll",
+        "lib/net8.0/Splat.Builder.xml",
+        "lib/net9.0/Splat.Builder.dll",
+        "lib/net9.0/Splat.Builder.xml",
+        "logo.png",
+        "splat.builder.19.4.1.nupkg.sha512",
+        "splat.builder.nuspec"
+      ]
+    },
+    "Splat.Core/19.4.1": {
+      "sha512": "fOjcUDP9YzJPZnSDI2eBO+NwRoEJVFEkTGlh/tFa7GUXc5mtMcQdwak60Ju4DWvPSAfsxlu2geObmhZAQe1VLg==",
+      "type": "package",
+      "path": "splat.core/19.4.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE/LICENSE",
+        "README.md",
+        "lib/net10.0/Splat.Core.dll",
+        "lib/net10.0/Splat.Core.xml",
+        "lib/net462/Splat.Core.dll",
+        "lib/net462/Splat.Core.xml",
+        "lib/net472/Splat.Core.dll",
+        "lib/net472/Splat.Core.xml",
+        "lib/net481/Splat.Core.dll",
+        "lib/net481/Splat.Core.xml",
+        "lib/net8.0/Splat.Core.dll",
+        "lib/net8.0/Splat.Core.xml",
+        "lib/net9.0/Splat.Core.dll",
+        "lib/net9.0/Splat.Core.xml",
+        "logo.png",
+        "splat.core.19.4.1.nupkg.sha512",
+        "splat.core.nuspec"
+      ]
+    },
+    "Splat.Logging/19.4.1": {
+      "sha512": "bvudJQxxMnHIa9dtZaUUCpvmd96rQxA0yjrZLoB4OSiAJpIxMCDCwnDmG6RhDyW2pS3O0xef2e1STY/oL1PqRw==",
+      "type": "package",
+      "path": "splat.logging/19.4.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE/LICENSE",
+        "README.md",
+        "lib/net10.0/Splat.Logging.dll",
+        "lib/net10.0/Splat.Logging.xml",
+        "lib/net462/Splat.Logging.dll",
+        "lib/net462/Splat.Logging.xml",
+        "lib/net472/Splat.Logging.dll",
+        "lib/net472/Splat.Logging.xml",
+        "lib/net481/Splat.Logging.dll",
+        "lib/net481/Splat.Logging.xml",
+        "lib/net8.0/Splat.Logging.dll",
+        "lib/net8.0/Splat.Logging.xml",
+        "lib/net9.0/Splat.Logging.dll",
+        "lib/net9.0/Splat.Logging.xml",
+        "logo.png",
+        "splat.logging.19.4.1.nupkg.sha512",
+        "splat.logging.nuspec"
+      ]
+    },
     "System.Configuration.ConfigurationManager/8.0.0": {
       "sha512": "JlYi9XVvIREURRUlGMr1F6vOFLk7YSY4p1vHo4kX3tQ0AGrjqlRWHDi66ImHhy6qwXBG3BJ6Y1QlYQ+Qz6Xgww==",
       "type": "package",
@@ -2053,6 +2349,33 @@
         "system.diagnostics.eventlog.8.0.0.nupkg.sha512",
         "system.diagnostics.eventlog.nuspec",
         "useSharedDesignerContext.txt"
+      ]
+    },
+    "System.Reactive/6.1.0": {
+      "sha512": "M5cCC1ZMkZr9jbSQGTHnVkb5TDN67qWCV7AP8TAHdGkvDlu0puT5NzemESNn9+HkYIDpWpocP68/i+/ame2/2w==",
+      "type": "package",
+      "path": "system.reactive/6.1.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "build/net6.0-windows10.0.19041/_._",
+        "build/net6.0/_._",
+        "buildTransitive/net6.0-windows10.0.19041/_._",
+        "buildTransitive/net6.0/_._",
+        "icon.png",
+        "lib/net472/System.Reactive.dll",
+        "lib/net472/System.Reactive.xml",
+        "lib/net6.0-windows10.0.19041/System.Reactive.dll",
+        "lib/net6.0-windows10.0.19041/System.Reactive.xml",
+        "lib/net6.0/System.Reactive.dll",
+        "lib/net6.0/System.Reactive.xml",
+        "lib/netstandard2.0/System.Reactive.dll",
+        "lib/netstandard2.0/System.Reactive.xml",
+        "lib/uap10.0.18362/System.Reactive.dll",
+        "lib/uap10.0.18362/System.Reactive.xml",
+        "readme.md",
+        "system.reactive.6.1.0.nupkg.sha512",
+        "system.reactive.nuspec"
       ]
     },
     "System.Security.Cryptography.ProtectedData/8.0.0": {
@@ -2199,30 +2522,29 @@
       "Avalonia.Themes.Fluent >= 12.0.4",
       "AvaloniaUI.DiagnosticsSupport >= 2.2.1",
       "CommunityToolkit.Mvvm >= 8.4.1",
-      "MySql.Data >= 9.7.0"
+      "MySql.Data >= 9.7.0",
+      "ReactiveUI >= 23.2.28"
     ]
   },
   "packageFolders": {
-    "C:\\Users\\decen\\.nuget\\packages\\": {}
+    "/Users/kyle/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\decen\\source\\repos\\HR-Applicant-Process-Windows-Application---Team-Frogram-Ming\\HR_Applicant_System.csproj",
+      "projectUniqueName": "/Users/kyle/Desktop/Application App Capstone_Project/HR_Applicant_System/HR_Applicant_System.csproj",
       "projectName": "HR_Applicant_System",
-      "projectPath": "C:\\Users\\decen\\source\\repos\\HR-Applicant-Process-Windows-Application---Team-Frogram-Ming\\HR_Applicant_System.csproj",
-      "packagesPath": "C:\\Users\\decen\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\decen\\source\\repos\\HR-Applicant-Process-Windows-Application---Team-Frogram-Ming\\obj\\",
+      "projectPath": "/Users/kyle/Desktop/Application App Capstone_Project/HR_Applicant_System/HR_Applicant_System.csproj",
+      "packagesPath": "/Users/kyle/.nuget/packages/",
+      "outputPath": "/Users/kyle/Desktop/Application App Capstone_Project/HR_Applicant_System/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\decen\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        "/Users/kyle/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net10.0"
       ],
       "sources": {
-        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -2276,6 +2598,10 @@
           "MySql.Data": {
             "target": "Package",
             "version": "[9.7.0, )"
+          },
+          "ReactiveUI": {
+            "target": "Package",
+            "version": "[23.2.28, )"
           }
         },
         "imports": [
@@ -2294,7 +2620,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.300/PortableRuntimeIdentifierGraph.json",
+        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/10.0.300/PortableRuntimeIdentifierGraph.json",
         "packagesToPrune": {
           "Microsoft.CSharp": "(,4.7.32767]",
           "Microsoft.VisualBasic": "(,10.4.32767]",
