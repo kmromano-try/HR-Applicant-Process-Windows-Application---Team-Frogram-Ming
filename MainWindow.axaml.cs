@@ -27,8 +27,8 @@ namespace HR_Applicant_System
 
         private void Admin_Click(object? sender, RoutedEventArgs e)
         {
-            AdminView adminView = new AdminView();
-            adminView.Show();
+            AdminLoginView adminLoginView = new AdminLoginView();
+            adminLoginView.Show();
             this.Close();
         }
     }

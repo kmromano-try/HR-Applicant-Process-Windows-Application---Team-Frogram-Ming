@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 07, 2026 at 12:35 PM
+-- Generation Time: Jun 08, 2026 at 01:37 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -44,7 +44,8 @@ INSERT INTO `applicants` (`ApplicantID`, `FullName`, `Email`, `ContactNumber`, `
 (2, 'Maria Santos', 'maria@example.com', NULL, '2026-06-05 16:22:58'),
 (3, 'Carlo Reyes', 'carlo@example.com', NULL, '2026-06-05 16:28:09'),
 (4, 'Ana Cruz', 'ana@example.com', NULL, '2026-06-05 16:28:09'),
-(5, 'Test Final Review Applicant', 'finalreview@example.com', '09123456789', '2026-06-05 17:45:23');
+(5, 'Test Final Review Applicant', 'finalreview@example.com', '09123456789', '2026-06-05 17:45:23'),
+(6, 'Demo Final Review Applicant', 'demofinalreview@example.com', '09123456789', '2026-06-08 19:31:15');
 
 -- --------------------------------------------------------
 
@@ -71,7 +72,8 @@ INSERT INTO `applications` (`ApplicationID`, `ApplicantID`, `JobID`, `CurrentSta
 (2, 2, 1, 'Accepted', 'HR Staff', 'Qualified for final review.', '2026-06-05 16:22:58'),
 (3, 3, 1, 'Rejected', 'HR Staff', 'Incomplete qualifications.', '2026-06-05 16:28:09'),
 (4, 4, 1, 'Rejected', 'HR Staff', 'Missing required documents.', '2026-06-05 16:28:09'),
-(5, 5, 2, 'Rejected', 'HR Staff', 'Passed initial screening and forwarded for final decision.', '2026-06-05 17:45:23');
+(5, 5, 2, 'Rejected', 'HR Staff', 'Passed initial screening and forwarded for final decision.', '2026-06-05 17:45:23'),
+(6, 6, 2, 'Accepted', 'HR Staff', 'Passed initial screening and forwarded for final decision.', '2026-06-08 19:31:15');
 
 -- --------------------------------------------------------
 
@@ -96,7 +98,8 @@ CREATE TABLE `applicationstatushistory` (
 INSERT INTO `applicationstatushistory` (`HistoryID`, `ApplicationID`, `OldStatus`, `NewStatus`, `Remarks`, `ChangedBy`, `ChangedAt`) VALUES
 (1, 1, 'For Final Review', 'Accepted', '', 'Admin/Manager', '2026-06-05 16:26:20'),
 (2, 2, 'For Final Review', 'Accepted', '', 'Admin/Manager', '2026-06-05 17:14:12'),
-(3, 5, 'For Final Review', 'Rejected', 'missing documents', 'Admin/Manager', '2026-06-05 17:48:51');
+(3, 5, 'For Final Review', 'Rejected', 'missing documents', 'Admin/Manager', '2026-06-05 17:48:51'),
+(4, 6, 'For Final Review', 'Accepted', '', 'Admin/Manager', '2026-06-08 19:34:12');
 
 -- --------------------------------------------------------
 
@@ -120,7 +123,8 @@ CREATE TABLE `hiringdecisions` (
 INSERT INTO `hiringdecisions` (`DecisionID`, `ApplicationID`, `Decision`, `FinalRemarks`, `DecidedBy`, `DecidedAt`) VALUES
 (1, 1, 'Accepted', '', 'Admin/Manager', '2026-06-05 16:26:20'),
 (2, 2, 'Accepted', '', 'Admin/Manager', '2026-06-05 17:14:12'),
-(3, 5, 'Rejected', 'missing documents', 'Admin/Manager', '2026-06-05 17:48:51');
+(3, 5, 'Rejected', 'missing documents', 'Admin/Manager', '2026-06-05 17:48:51'),
+(4, 6, 'Accepted', '', 'Admin/Manager', '2026-06-08 19:34:12');
 
 -- --------------------------------------------------------
 
@@ -144,8 +148,10 @@ CREATE TABLE `jobvacancies` (
 
 INSERT INTO `jobvacancies` (`JobID`, `JobTitle`, `Department`, `JobDescription`, `MinimumQualifications`, `VacancyStatus`, `CreatedAt`) VALUES
 (1, 'IT Support Staff', 'IT Department', 'Responsible for assisting employees with technical concerns.', 'Graduate of IT or related course.', 'Closed', '2026-06-05 16:21:06'),
-(2, 'IT Staff', 'IT Department', 'Responsible for assisting employees with technical concerns.', 'IT Graduate', 'Active', '2026-06-05 17:13:39'),
-(3, 'IT Manager', 'IT Department', 'handling staff and good personality', 'atleast 4 years of manager experience, IT college graduate', 'Active', '2026-06-06 22:35:43');
+(2, 'IT Staff', 'IT Department', 'Responsible for assisting employees with technical concerns.', 'IT Graduate', 'Closed', '2026-06-05 17:13:39'),
+(3, 'IT Manager', 'IT Department', 'handling staff and good personality', 'atleast 4 years of manager experience, IT college graduate', 'Active', '2026-06-06 22:35:43'),
+(4, 'IT Manager', 'IT Deoartment', 'handle all the staff and good attitude', 'must be IT graduate', 'Active', '2026-06-07 19:35:42'),
+(5, 'Recruitment Assistant', 'Human Resources', 'Assist in recruitment processing, applicant screening, and HR documentation.', 'Graduate of any business or HR-related course.', 'Active', '2026-06-08 19:31:15');
 
 -- --------------------------------------------------------
 
@@ -257,31 +263,31 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `applicants`
 --
 ALTER TABLE `applicants`
-  MODIFY `ApplicantID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `ApplicantID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `applications`
 --
 ALTER TABLE `applications`
-  MODIFY `ApplicationID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `ApplicationID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `applicationstatushistory`
 --
 ALTER TABLE `applicationstatushistory`
-  MODIFY `HistoryID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `HistoryID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `hiringdecisions`
 --
 ALTER TABLE `hiringdecisions`
-  MODIFY `DecisionID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `DecisionID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `jobvacancies`
 --
 ALTER TABLE `jobvacancies`
-  MODIFY `JobID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `JobID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `roles`

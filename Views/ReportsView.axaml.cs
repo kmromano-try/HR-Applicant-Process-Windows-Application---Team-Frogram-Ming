@@ -1,13 +1,18 @@
-﻿using Avalonia;
+﻿using System;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
+using MySql.Data.MySqlClient;
+using HR_Applicant_System.Models;
 
 namespace HR_Applicant_System.Views
 {
     public class ReportsView : Window
     {
+        private ListBox reportList;
+
         public ReportsView()
         {
             Width = 750;
@@ -28,17 +33,15 @@ namespace HR_Applicant_System.Views
                 TextWrapping = TextWrapping.Wrap
             };
 
-            ListBox reportList = new ListBox
+            reportList = new ListBox
             {
                 Height = 250,
                 Items =
                 {
                     "Applicant List Report",
                     "Active Job Vacancies Report",
-                    "Interview Schedule Report",
                     "Accepted Applicants Report",
-                    "Rejected Applicants Report",
-                    "Missing Requirements Report"
+                    "Rejected Applicants Report"
                 }
             };
 
@@ -86,15 +89,109 @@ namespace HR_Applicant_System.Views
 
         private void GenerateReport_Click(object? sender, RoutedEventArgs e)
         {
-            ShowMessage("Report generation screen is working. Database report data will be added next.");
+            if (reportList.SelectedItem == null)
+            {
+                ShowMessage("Please select a report first.");
+                return;
+            }
+
+            string selectedReport = reportList.SelectedItem.ToString() ?? "";
+
+            if (selectedReport == "Active Job Vacancies Report")
+            {
+                ShowActiveJobVacanciesReport();
+            }
+            else
+            {
+                ShowMessage("This report option is listed for the full system. Please select Active Job Vacancies Report for the working report demo.");
+            }
+        }
+
+        private void ShowActiveJobVacanciesReport()
+        {
+            Window reportWindow = new Window
+            {
+                Width = 800,
+                Height = 500,
+                Title = "Active Job Vacancies Report"
+            };
+
+            ListBox jobList = new ListBox
+            {
+                Height = 340
+            };
+
+            try
+            {
+                using (MySqlConnection conn = DatabaseHelper.GetConnection())
+                {
+                    conn.Open();
+
+                    string query = @"
+                        SELECT JobID, JobTitle, Department, VacancyStatus, CreatedAt
+                        FROM JobVacancies
+                        WHERE VacancyStatus = 'Active'
+                        ORDER BY CreatedAt DESC";
+
+                    using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                    using (MySqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            string item =
+                                "Job #" + reader["JobID"] +
+                                " | " + reader["JobTitle"] +
+                                " | " + reader["Department"] +
+                                " | Status: " + reader["VacancyStatus"] +
+                                " | Posted: " + Convert.ToDateTime(reader["CreatedAt"]).ToString("MMM dd, yyyy");
+
+                            jobList.Items.Add(item);
+                        }
+                    }
+                }
+
+                if (jobList.Items.Count == 0)
+                {
+                    jobList.Items.Add("No active job vacancies found.");
+                }
+            }
+            catch (Exception ex)
+            {
+                jobList.Items.Add("Database error: " + ex.Message);
+            }
+
+            StackPanel panel = new StackPanel
+            {
+                Margin = new Thickness(25),
+                Spacing = 15,
+                Children =
+                {
+                    new TextBlock
+                    {
+                        Text = "Active Job Vacancies Report",
+                        FontSize = 24,
+                        FontWeight = FontWeight.Bold
+                    },
+                    new TextBlock
+                    {
+                        Text = "This report shows all job vacancies currently marked as Active.",
+                        Foreground = Brushes.Gray,
+                        TextWrapping = TextWrapping.Wrap
+                    },
+                    jobList
+                }
+            };
+
+            reportWindow.Content = panel;
+            reportWindow.Show();
         }
 
         private async void ShowMessage(string message)
         {
             Window dialog = new Window
             {
-                Width = 400,
-                Height = 150,
+                Width = 430,
+                Height = 160,
                 Title = "Message",
                 Content = new TextBlock
                 {
