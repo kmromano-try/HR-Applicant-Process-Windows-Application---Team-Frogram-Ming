@@ -1,105 +1,98 @@
 using System;
 using System.Collections.ObjectModel;
+using System.Windows.Input;
+using ReactiveUI;
 
 namespace HR_Applicant_System.ViewModels
 {
     public class ApplicantListViewModel : ViewModelBase
     {
-        private readonly ApplicationRepository _repository = new ApplicationRepository();
-
-        public ObservableCollection<JobVacancySummary> PendingJobs { get; set; } = new ObservableCollection<JobVacancySummary>();
-        public ObservableCollection<ApplicantDetailsSummary> JobApplicants { get; set; } = new ObservableCollection<ApplicantDetailsSummary>();
-        public ObservableCollection<JobVacancySummary> EmptyJobs { get; set; } = new ObservableCollection<JobVacancySummary>();
-        public ObservableCollection<ReviewedApplicationSummary> ReviewedApplications { get; set; } = new ObservableCollection<ReviewedApplicationSummary>();
-
-        private JobVacancySummary? _selectedJob;
-        public JobVacancySummary? SelectedJob
+        private string _staffEmail = "hugh.franco@company.edu.ph";
+        public string StaffEmail
         {
-            get => _selectedJob;
-            set
-            {
-                _selectedJob = value;
-                OnPropertyChanged(nameof(SelectedJob));
-                LoadApplicantsForSelectedJob();
-            }
+            get => _staffEmail;
+            set => this.RaiseAndSetIfChanged(ref _staffEmail, value);
         }
 
-        private ApplicantDetailsSummary? _selectedApplicant;
-        public ApplicantDetailsSummary? SelectedApplicant
+        private string _fullName = "Hugh Gabriel Franco";
+        public string FullName
         {
-            get => _selectedApplicant;
-            set
-            {
-                _selectedApplicant = value;
-                OnPropertyChanged(nameof(SelectedApplicant));
-            }
+            get => _fullName;
+            set => this.RaiseAndSetIfChanged(ref _fullName, value);
         }
 
-        public string StaffEmail { get; set; } = "staff@company.com";
-        public string FullName { get; set; } = "";
-        public DateTimeOffset Birthdate { get; set; } = DateTimeOffset.Now;
-        public string Bio { get; set; } = "";
-        public string Department { get; set; } = "";
-
-        private bool _isLoading;
-        public bool IsLoading
+        private DateTimeOffset? _birthdate = new DateTimeOffset(2005, 1, 1, 0, 0, 0, TimeSpan.Zero);
+        public DateTimeOffset? Birthdate
         {
-            get => _isLoading;
-            set { _isLoading = value; OnPropertyChanged(nameof(IsLoading)); }
+            get => _birthdate;
+            set => this.RaiseAndSetIfChanged(ref _birthdate, value);
         }
+
+        private string _department = "Human Resources Development";
+        public string Department
+        {
+            get => _department;
+            set => this.RaiseAndSetIfChanged(ref _department, value);
+        }
+
+        private string _bio = "Lead HR Specialist coordinating the Capstone Evaluation Systems pipeline.";
+        public string Bio
+        {
+            get => _bio;
+            set => this.RaiseAndSetIfChanged(ref _bio, value);
+        }
+
+        public ObservableCollection<ApplicantItem> Applicants { get; set; }
+
+        public ICommand SaveProfile { get; }
+        public ICommand RefreshDashboard { get; }
 
         public ApplicantListViewModel()
         {
-            RefreshDashboard();
-        }
+            Applicants = new ObservableCollection<ApplicantItem>();
+            
+            LoadDataFromDatabase();
 
-        public void RefreshDashboard()
-        {
-            IsLoading = true;
-            PendingJobs.Clear();
-            EmptyJobs.Clear();
-            ReviewedApplications.Clear();
-
-            foreach (var j in _repository.GetJobsWithPendingApplications()) PendingJobs.Add(j);
-            foreach (var j in _repository.GetJobsWithoutApplications()) EmptyJobs.Add(j);
-            foreach (var r in _repository.GetReviewedApplications()) ReviewedApplications.Add(r);
-
-            IsLoading = false;
-        }
-
-        private void LoadApplicantsForSelectedJob()
-        {
-            JobApplicants.Clear();
-            SelectedApplicant = null;
-            if (SelectedJob != null)
+            SaveProfile = ReactiveCommand.Create(() =>
             {
-                foreach (var app in _repository.GetApplicantsForJob(SelectedJob.JobVacancyID))
+                System.Diagnostics.Debug.WriteLine($"[HR Portal] Profile saved successfully for {FullName}.");
+            });
+
+            RefreshDashboard = ReactiveCommand.Create(() =>
+            {
+                LoadDataFromDatabase();
+            });
+        }
+
+        private void LoadDataFromDatabase()
+        {
+            try
+            {
+                var repo = new ApplicationRepository();
+                var databaseRecords = repo.GetAllActiveApplications();
+
+                Applicants.Clear();
+                foreach (var item in databaseRecords)
                 {
-                    JobApplicants.Add(app);
+                    Applicants.Add(item);
                 }
             }
-        }
-
-        public void AcceptCurrentApplication() => ProcessDecision("Staff Approved");
-        public void RejectCurrentApplication() => ProcessDecision("Staff Rejected");
-
-        private void ProcessDecision(string decision)
-        {
-            if (SelectedApplicant != null)
+            catch (Exception ex)
             {
-                bool success = _repository.ReviewApplication(SelectedApplicant.ApplicationID, decision, "Processed by HR Staff", "HR Staff Member");
-                if (success)
-                {
-                    RefreshDashboard();
-                    JobApplicants.Clear();
-                    SelectedApplicant = null;
-                }
+                System.Diagnostics.Debug.WriteLine($"Database connection failed: {ex.Message}");
+                
+                Applicants.Clear();
+                Applicants.Add(new ApplicantItem { Name = "Alice Juan (Mock Data)", Position = "Junior Python Developer", Status = "Pending Review" });
+                Applicants.Add(new ApplicantItem { Name = "Mark Carandang (Mock Data)", Position = "Database Administrator", Status = "Interviewing" });
+                Applicants.Add(new ApplicantItem { Name = "Sophia Mendoza (Mock Data)", Position = "QA Automation Engineer", Status = "Technical Test" });
             }
-        }
-
-        public void SaveProfile()
-        {
-            System.Diagnostics.Debug.WriteLine($"Profile saved for {FullName}");
         }
     }
-}
+
+    public class ApplicantItem
+    {
+        public string Name { get; set; } = string.Empty;
+        public string Position { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty;
+    }
+}   
