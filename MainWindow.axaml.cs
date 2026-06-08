@@ -1,41 +1,35 @@
-using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using HR_Applicant_System.Views;
 
-namespace AvaloniaApplication1;
-
-public partial class MainWindow : Window
+namespace HR_Applicant_System
 {
-    public MainWindow()
+    public partial class MainWindow : Window
     {
-        InitializeComponent();
-    }
-
-    private async void Login_Click(object? sender, RoutedEventArgs e)
-    {
-        await ShowMessage("Success", "Login button clicked!");
-    }
-
-    private async void Register_Click(object? sender, RoutedEventArgs e)
-    {
-        await ShowMessage("Register", "Create Account button clicked!");
-    }
-
-    private async Task ShowMessage(string title, string message)
-    {
-        var dialog = new Window
+        public MainWindow()
         {
-            Title = title,
-            Width = 350,
-            Height = 180,
-            Content = new TextBlock
-            {
-                Text = message,
-                HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
-                VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center
-            }
-        };
+            InitializeComponent();
+        }
 
-        await dialog.ShowDialog(this);
+        private void Applicant_Click(object? sender, RoutedEventArgs e)
+        {
+            ApplicantView applicantView = new ApplicantView();
+            applicantView.Show();
+            this.Close();
+        }
+
+        private void Staff_Click(object? sender, RoutedEventArgs e)
+        {
+            StaffView staffView = new StaffView();
+            staffView.Show();
+            this.Close();
+        }
+
+        private void Admin_Click(object? sender, RoutedEventArgs e)
+        {
+            AdminView adminView = new AdminView();
+            adminView.Show();
+            this.Close();
+        }
     }
 }

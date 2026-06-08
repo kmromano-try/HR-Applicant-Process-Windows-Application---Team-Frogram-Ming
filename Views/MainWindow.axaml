@@ -20,20 +20,19 @@
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
                     Spacing="15"
-                    Width="300">
+                    Width="320">
 
-			<Button Content="Applicant Login"
-                    Height="45"/>
-
-			<Button Content="Applicant Registration"
-                    Height="45"/>
-
-			<Button Content="HR Staff Login"
-                    Height="45"/>
-
-			<Button Content="Admin / Manager Login"
+			<Button Content="Applicant Portal"
                     Height="45"
-                    Click="AdminLogin_Click"/>
+                    Click="Applicant_Click"/>
+
+			<Button Content="HR Staff Portal"
+                    Height="45"
+                    Click="Staff_Click"/>
+
+			<Button Content="Admin / Manager Dashboard"
+                    Height="45"
+                    Click="Admin_Click"/>
 
 		</StackPanel>
 

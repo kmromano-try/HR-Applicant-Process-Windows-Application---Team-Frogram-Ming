@@ -2,19 +2,34 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using HR_Applicant_System.Views;
 
-namespace HR_Applicant_System;
-
-public partial class MainWindow : Window
+namespace HR_Applicant_System
 {
-    public MainWindow()
+    public partial class MainWindow : Window
     {
-        InitializeComponent();
-    }
+        public MainWindow()
+        {
+            InitializeComponent();
+        }
 
-    private void AdminLogin_Click(object? sender, RoutedEventArgs e)
-    {
-        AdminView adminView = new AdminView();
-        adminView.Show();
-        this.Close();
+        private void Applicant_Click(object? sender, RoutedEventArgs e)
+        {
+            ApplicantView applicantView = new ApplicantView();
+            applicantView.Show();
+            this.Close();
+        }
+
+        private void Staff_Click(object? sender, RoutedEventArgs e)
+        {
+            StaffView staffView = new StaffView();
+            staffView.Show();
+            this.Close();
+        }
+
+        private void Admin_Click(object? sender, RoutedEventArgs e)
+        {
+            AdminView adminView = new AdminView();
+            adminView.Show();
+            this.Close();
+        }
     }
-}    
+}
