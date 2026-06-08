@@ -1,0 +1,51 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="AvaloniaApplication1.MainWindow"
+        Width="800"
+        Height="600"
+        Title="HR Recruitment System">
+
+    <Grid>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Sidebar -->
+        <StackPanel Grid.Column="0"
+                    Margin="10"
+                    Spacing="10">
+
+            <TextBlock Text="Applicant Menu"
+                       FontSize="20"/>
+
+            <Button Content="My Profile"/>
+            <Button Content="Apply Job"/>
+            <Button Content="Upload Requirements"/>
+            <Button Content="Track Status"/>
+            <Button Content="Logout"/>
+
+        </StackPanel>
+
+        <!-- Main Content -->
+        <StackPanel Grid.Column="1"
+                    Margin="20"
+                    Spacing="10">
+
+            <TextBlock Text="Applicant Dashboard"
+                       FontSize="28"/>
+
+            <Border Padding="15">
+                <TextBlock Text="Welcome to the HR Recruitment System"/>
+            </Border>
+
+            <Border Padding="15">
+                <TextBlock Text="Current Application Status: Pending Review"/>
+            </Border>
+
+        </StackPanel>
+
+    </Grid>
+
+</Window>
