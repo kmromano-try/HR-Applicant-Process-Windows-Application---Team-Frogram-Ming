@@ -1,5 +1,6 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using HR_Applicant_System.ViewModels;
 using HR_Applicant_System.Views;
 
 namespace HR_Applicant_System
@@ -20,8 +21,19 @@ namespace HR_Applicant_System
 
         private void Staff_Click(object? sender, RoutedEventArgs e)
         {
-            StaffView staffView = new StaffView();
-            staffView.Show();
+            var staffPortalWindow = new Window
+            {
+                Title = "HR Staff Portal",
+                Width = 900,
+                Height = 600,
+                WindowStartupLocation = WindowStartupLocation.CenterScreen,
+                Content = new ApplicantListView
+                {
+                    DataContext = new ApplicantListViewModel()
+                }
+            };
+
+            staffPortalWindow.Show();
             this.Close();
         }
 

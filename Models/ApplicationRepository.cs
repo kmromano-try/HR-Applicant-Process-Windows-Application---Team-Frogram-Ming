@@ -33,5 +33,29 @@ namespace HR_Applicant_System.Models
             }
             return list;
         }
+
+        public bool UpdateApplicationStatus(int applicationId, string newStatus)
+        {
+            try
+            {
+                using (var conn = DatabaseHelper.GetConnection())
+                {
+                    conn.Open();
+                    // Aligned with the snake_case naming used in GetAllActiveApplications
+                    string query = "UPDATE applications SET current_status = @status WHERE application_id = @id";
+                    using (var cmd = new MySqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@status", newStatus);
+                        cmd.Parameters.AddWithValue("@id", applicationId);
+                        return cmd.ExecuteNonQuery() > 0;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error updating application status: {ex.Message}");
+                return false;
+            }
+        }
     }
 }

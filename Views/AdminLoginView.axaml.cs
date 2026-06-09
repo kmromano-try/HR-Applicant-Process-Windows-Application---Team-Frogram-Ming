@@ -1,8 +1,11 @@
-﻿using Avalonia;
+﻿﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using System; // Added for Convert class
 using Avalonia.Layout;
 using Avalonia.Media;
+using MySql.Data.MySqlClient;
+using HR_Applicant_System.Models;
 
 namespace HR_Applicant_System.Views
 {
@@ -19,12 +22,12 @@ namespace HR_Applicant_System.Views
 
             txtEmail = new TextBox
             {
-                Watermark = "Enter admin email"
+                PlaceholderText = "Enter admin email"
             };
 
             txtPassword = new TextBox
             {
-                Watermark = "Enter password",
+                PlaceholderText = "Enter password",
                 PasswordChar = '*'
             };
 
@@ -106,16 +109,42 @@ namespace HR_Applicant_System.Views
             string email = txtEmail.Text ?? "";
             string password = txtPassword.Text ?? "";
 
-            // Hardcoded Admin/Manager credentials based on assigned module requirement
-            if (email == "admin@gmail.com" && password == "admin123")
+            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
             {
-                AdminView adminView = new AdminView();
-                adminView.Show();
-                this.Close();
+                ShowMessage("Please enter both email and password.");
+                return;
             }
-            else
+
+            try
             {
-                ShowMessage("Invalid admin email or password.");
+                using (var conn = DatabaseHelper.GetConnection())
+                {
+                    conn.Open();
+                    // Query users table for Email/Password and ensure they have an Admin (1) or HR Manager (2) role
+                    string query = "SELECT COUNT(*) FROM users WHERE Email = @Email AND Password = @Password AND RoleID IN (1, 2)";
+                    using (var cmd = new MySqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@Email", email);
+                        cmd.Parameters.AddWithValue("@Password", password);
+
+                        int count = Convert.ToInt32(cmd.ExecuteScalar());
+
+                        if (count > 0)
+                        {
+                            AdminView adminView = new AdminView();
+                            adminView.Show();
+                            this.Close();
+                        }
+                        else
+                        {
+                            ShowMessage("Invalid admin email or password.");
+                        }
+                    }
+                }
+            }
+            catch (System.Exception ex)
+            {
+                ShowMessage($"Database connection error: {ex.Message}");
             }
         }
 
