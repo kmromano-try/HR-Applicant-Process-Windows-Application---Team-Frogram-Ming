@@ -15,7 +15,11 @@ namespace HR_Applicant_System.Models
             using (var conn = DatabaseHelper.GetConnection())
             {
                 conn.Open();
-                string query = "SELECT applicant_name, target_position, current_status FROM applications";
+                // Using JOIN to get the Name from Applicants and Title from JobVacancies
+                string query = @"SELECT ap.FullName, j.JobTitle, a.CurrentStatus 
+                                FROM applications a
+                                INNER JOIN applicants ap ON a.ApplicantID = ap.ApplicantID
+                                INNER JOIN jobvacancies j ON a.JobID = j.JobID";
 
                 using (var cmd = new MySqlCommand(query, conn))
                 using (var reader = cmd.ExecuteReader())
@@ -24,9 +28,9 @@ namespace HR_Applicant_System.Models
                     {
                         list.Add(new ApplicantItem
                         {
-                            Name = reader.IsDBNull(reader.GetOrdinal("applicant_name")) ? string.Empty : reader.GetString("applicant_name"),
-                            Position = reader.IsDBNull(reader.GetOrdinal("target_position")) ? string.Empty : reader.GetString("target_position"),
-                            Status = reader.IsDBNull(reader.GetOrdinal("current_status")) ? string.Empty : reader.GetString("current_status")
+                            Name = reader.IsDBNull(reader.GetOrdinal("FullName")) ? string.Empty : reader.GetString("FullName"),
+                            Position = reader.IsDBNull(reader.GetOrdinal("JobTitle")) ? string.Empty : reader.GetString("JobTitle"),
+                            Status = reader.IsDBNull(reader.GetOrdinal("CurrentStatus")) ? string.Empty : reader.GetString("CurrentStatus")
                         });
                     }
                 }

@@ -12,19 +12,21 @@ namespace HR_Applicant_System.Models
             using (var conn = DatabaseHelper.GetConnection())
             {
                 conn.Open();
-                string query = "SELECT JobID, JobTitle, Department, VacancyStatus, CreatedAt FROM JobVacancies ORDER BY CreatedAt DESC";
-                using (var cmd = new MySqlCommand(query, conn))
+                // Define the query string for GetAllJobs
+                string query = "SELECT VacancyID, JobTitle, Department, JobDescription, MinimumQualifications, VacancyStatus FROM JobVacancies";
+                using (var cmd = new MySqlCommand(query, conn)) 
                 using (var reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())
                     {
                         list.Add(new JobVacancy
                         {
-                            JobID = Convert.ToInt32(reader["JobID"]),
+                            VacancyID = Convert.ToInt32(reader["VacancyID"]),
                             JobTitle = reader["JobTitle"].ToString() ?? string.Empty,
                             Department = reader["Department"].ToString() ?? string.Empty,
-                            VacancyStatus = reader["VacancyStatus"].ToString() ?? string.Empty,
-                            CreatedAt = Convert.ToDateTime(reader["CreatedAt"])
+                            JobDescription = reader["JobDescription"].ToString() ?? string.Empty,
+                            Qualifications = reader["MinimumQualifications"].ToString() ?? string.Empty,
+                            Status = reader["VacancyStatus"].ToString() ?? string.Empty // Map VacancyStatus from DB to Status in model
                         });
                     }
                 }
@@ -39,15 +41,15 @@ namespace HR_Applicant_System.Models
                 using (var conn = DatabaseHelper.GetConnection())
                 {
                     conn.Open();
-                    string query = @"INSERT INTO JobVacancies (JobTitle, Department, JobDescription, VacancyStatus, CreatedAt) 
-                                   VALUES (@Title, @Dept, @Desc, @Status, @Created)";
+                    string query = @"INSERT INTO JobVacancies (JobTitle, Department, JobDescription, MinimumQualifications, VacancyStatus) 
+                                   VALUES (@Title, @Dept, @Desc, @Quals, @Status)";
                     using (var cmd = new MySqlCommand(query, conn))
                     {
                         cmd.Parameters.AddWithValue("@Title", job.JobTitle);
                         cmd.Parameters.AddWithValue("@Dept", job.Department);
                         cmd.Parameters.AddWithValue("@Desc", job.JobDescription);
-                        cmd.Parameters.AddWithValue("@Status", job.VacancyStatus);
-                        cmd.Parameters.AddWithValue("@Created", job.CreatedAt);
+                        cmd.Parameters.AddWithValue("@Quals", job.Qualifications); // Assign Qualifications
+                        cmd.Parameters.AddWithValue("@Status", job.Status); // Use Status from model
                         return cmd.ExecuteNonQuery() > 0;
                     }
                 }
