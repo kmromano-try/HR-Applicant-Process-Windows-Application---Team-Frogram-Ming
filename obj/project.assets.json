@@ -2527,24 +2527,26 @@
     ]
   },
   "packageFolders": {
-    "/Users/kyle/.nuget/packages/": {}
+    "C:\\Users\\decen\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/kyle/Desktop/Application App Capstone_Project/HR_Applicant_System/HR_Applicant_System.csproj",
+      "projectUniqueName": "C:\\Users\\decen\\source\\repos\\HR-Applicant-Process-Windows-Application---Team-Frogram-Ming\\HR_Applicant_System.csproj",
       "projectName": "HR_Applicant_System",
-      "projectPath": "/Users/kyle/Desktop/Application App Capstone_Project/HR_Applicant_System/HR_Applicant_System.csproj",
-      "packagesPath": "/Users/kyle/.nuget/packages/",
-      "outputPath": "/Users/kyle/Desktop/Application App Capstone_Project/HR_Applicant_System/obj/",
+      "projectPath": "C:\\Users\\decen\\source\\repos\\HR-Applicant-Process-Windows-Application---Team-Frogram-Ming\\HR_Applicant_System.csproj",
+      "packagesPath": "C:\\Users\\decen\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\decen\\source\\repos\\HR-Applicant-Process-Windows-Application---Team-Frogram-Ming\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "/Users/kyle/.nuget/NuGet/NuGet.Config"
+        "C:\\Users\\decen\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
         "net10.0"
       ],
       "sources": {
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -2620,7 +2622,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/10.0.300/PortableRuntimeIdentifierGraph.json",
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.300/PortableRuntimeIdentifierGraph.json",
         "packagesToPrune": {
           "Microsoft.CSharp": "(,4.7.32767]",
           "Microsoft.VisualBasic": "(,10.4.32767]",
