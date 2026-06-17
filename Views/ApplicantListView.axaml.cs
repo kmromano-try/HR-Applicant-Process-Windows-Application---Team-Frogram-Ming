@@ -33,7 +33,7 @@ namespace HR_Applicant_System.Views
             };
         }
 
-        public void MyProfile_Click(object? sender, RoutedEventArgs e)
+        private void MyProfile_Click(object? sender, RoutedEventArgs e)
         {
             // Open the standalone profile window and share the current DataContext
             var profileWindow = new StaffProfileView();
@@ -41,7 +41,7 @@ namespace HR_Applicant_System.Views
             profileWindow.Show();
         }
 
-        public void Logout_Click(object? sender, RoutedEventArgs e)
+        private void Logout_Click(object? sender, RoutedEventArgs e)
         {
             new MainWindow().Show();
             (this.VisualRoot as Window)?.Close();
