@@ -1,8 +1,9 @@
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-using HR_Applicant_System;
-namespace AvaloniaApplication1;
+
+namespace HR_Applicant_System;
 
 public partial class App : Application
 {
@@ -15,6 +16,8 @@ public partial class App : Application
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
+            // FIX: Stops the app from crashing/killing itself when MainWindow closes
+            desktop.ShutdownMode = ShutdownMode.OnLastWindowClose;
             desktop.MainWindow = new MainWindow();
         }
 

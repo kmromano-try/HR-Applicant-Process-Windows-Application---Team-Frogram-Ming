@@ -57,7 +57,7 @@ CREATE TABLE `applications` (
   `ApplicationID` int(11) NOT NULL,
   `ApplicantID` int(11) NOT NULL,
   `JobID` int(11) NOT NULL,
-  `CurrentStatus` varchar(50) DEFAULT 'Submitted',
+  `Status` varchar(50) DEFAULT 'Submitted',
   `StaffReviewer` varchar(100) DEFAULT NULL,
   `ScreeningRemarks` text DEFAULT NULL,
   `AppliedAt` datetime DEFAULT current_timestamp()
@@ -67,7 +67,7 @@ CREATE TABLE `applications` (
 -- Dumping data for table `applications`
 --
 
-INSERT INTO `applications` (`ApplicationID`, `ApplicantID`, `JobID`, `CurrentStatus`, `StaffReviewer`, `ScreeningRemarks`, `AppliedAt`) VALUES
+INSERT INTO `applications` (`ApplicationID`, `ApplicantID`, `JobID`, `Status`, `StaffReviewer`, `ScreeningRemarks`, `AppliedAt`) VALUES
 (1, 1, 1, 'Accepted', 'HR Staff', 'Passed initial screening.', '2026-06-05 16:22:58'),
 (2, 2, 1, 'Accepted', 'HR Staff', 'Qualified for final review.', '2026-06-05 16:22:58'),
 (3, 3, 1, 'Rejected', 'HR Staff', 'Incomplete qualifications.', '2026-06-05 16:28:09'),

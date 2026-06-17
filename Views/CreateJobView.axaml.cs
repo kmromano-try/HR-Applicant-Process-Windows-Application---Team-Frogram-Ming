@@ -1,4 +1,4 @@
-﻿using Avalonia;
+﻿﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
@@ -23,17 +23,17 @@ namespace HR_Applicant_System.Views
 
             txtJobTitle = new TextBox
             {
-                Watermark = "Enter job title"
+                PlaceholderText = "Enter job title"
             };
 
             txtDepartment = new TextBox
             {
-                Watermark = "Enter department"
+                PlaceholderText = "Enter department"
             };
 
             txtDescription = new TextBox
             {
-                Watermark = "Enter job description",
+                PlaceholderText = "Enter job description",
                 Height = 80,
                 AcceptsReturn = true,
                 TextWrapping = TextWrapping.Wrap
@@ -41,7 +41,7 @@ namespace HR_Applicant_System.Views
 
             txtQualifications = new TextBox
             {
-                Watermark = "Enter minimum qualifications",
+                PlaceholderText = "Enter minimum qualifications",
                 Height = 80,
                 AcceptsReturn = true,
                 TextWrapping = TextWrapping.Wrap
@@ -65,26 +65,27 @@ namespace HR_Applicant_System.Views
                     {
                         Text = "Create Job Vacancy",
                         FontSize = 24,
-                        FontWeight = FontWeight.Bold
+                        FontWeight = FontWeight.Bold,
+                        Foreground = Brushes.White
                     },
 
                     new TextBlock
                     {
                         Text = "Admin/Manager can publish active job openings for applicants.",
                         TextWrapping = TextWrapping.Wrap,
-                        Foreground = Brushes.Gray
+                        Foreground = new SolidColorBrush(Color.Parse("#e0e0e0"))
                     },
 
-                    new TextBlock { Text = "Job Title" },
+                    new TextBlock { Text = "Job Title", Foreground = Brushes.White },
                     txtJobTitle,
 
-                    new TextBlock { Text = "Department" },
+                    new TextBlock { Text = "Department", Foreground = Brushes.White },
                     txtDepartment,
 
-                    new TextBlock { Text = "Job Description" },
+                    new TextBlock { Text = "Job Description", Foreground = Brushes.White },
                     txtDescription,
 
-                    new TextBlock { Text = "Minimum Qualifications" },
+                    new TextBlock { Text = "Minimum Qualifications", Foreground = Brushes.White },
                     txtQualifications,
 
                     btnPublish
@@ -93,7 +94,7 @@ namespace HR_Applicant_System.Views
 
             Border card = new Border
             {
-                Background = Brushes.White,
+                Background = new SolidColorBrush(Color.Parse("#252525")),
                 CornerRadius = new CornerRadius(10),
                 Padding = new Thickness(30),
                 Width = 450,
@@ -104,7 +105,7 @@ namespace HR_Applicant_System.Views
 
             Grid mainGrid = new Grid
             {
-                Background = new SolidColorBrush(Color.Parse("#F3F4F6")),
+                Background = new SolidColorBrush(Color.Parse("#1e1e1e")),
                 Children =
                 {
                     card
@@ -134,17 +135,17 @@ namespace HR_Applicant_System.Views
                 {
                     conn.Open();
 
-                    string insertQuery = @"INSERT INTO JobVacancies
-                               (JobTitle, Department, JobDescription, MinimumQualifications, VacancyStatus)
+                    string insertQuery = $@"INSERT INTO {DatabaseHelper.JobTable}
+                               (JobTitle, Department, JobDescription, Qualifications, Status)
                                VALUES
-                               (@JobTitle, @Department, @JobDescription, @MinimumQualifications, 'Active')";
+                               (@JobTitle, @Department, @JobDescription, @Qualifications, 'Active')";
 
                     using (MySqlCommand cmd = new MySqlCommand(insertQuery, conn))
                     {
                         cmd.Parameters.AddWithValue("@JobTitle", jobTitle);
                         cmd.Parameters.AddWithValue("@Department", department);
                         cmd.Parameters.AddWithValue("@JobDescription", description);
-                        cmd.Parameters.AddWithValue("@MinimumQualifications", qualifications);
+                        cmd.Parameters.AddWithValue("@Qualifications", qualifications);
 
                         cmd.ExecuteNonQuery();
                     }
@@ -165,22 +166,25 @@ namespace HR_Applicant_System.Views
 
         private async void ShowMessage(string message)
         {
-            Window dialog = new Window
+            Avalonia.Threading.Dispatcher.UIThread.Post(async () =>
             {
-                Width = 380,
-                Height = 150,
-                Title = "Message",
-                Content = new TextBlock
+                Window dialog = new Window
                 {
-                    Text = message,
-                    Margin = new Thickness(20),
-                    TextWrapping = TextWrapping.Wrap,
-                    VerticalAlignment = VerticalAlignment.Center,
-                    HorizontalAlignment = HorizontalAlignment.Center
-                }
-            };
+                    Width = 380,
+                    Height = 150,
+                    Title = "Message",
+                    Content = new TextBlock
+                    {
+                        Text = message,
+                        Margin = new Thickness(20),
+                        TextWrapping = TextWrapping.Wrap,
+                        VerticalAlignment = VerticalAlignment.Center,
+                        HorizontalAlignment = HorizontalAlignment.Center
+                    }
+                };
 
-            await dialog.ShowDialog(this);
+                await dialog.ShowDialog(this);
+            });
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
@@ -19,18 +19,20 @@ namespace HR_Applicant_System.Views
             Width = 750;
             Height = 540;
             Title = "Staff Approved Queue";
+            WindowStartupLocation = WindowStartupLocation.CenterOwner;
 
             TextBlock title = new TextBlock
             {
                 Text = "Staff Approved Queue",
                 FontSize = 26,
-                FontWeight = FontWeight.Bold
+                FontWeight = FontWeight.Bold,
+                Foreground = Brushes.White
             };
 
             TextBlock subtitle = new TextBlock
             {
                 Text = "Applicants in this section are waiting for Admin/Manager final decision.",
-                Foreground = Brushes.Gray,
+                Foreground = new SolidColorBrush(Color.Parse("#e0e0e0")),
                 TextWrapping = TextWrapping.Wrap
             };
 
@@ -38,10 +40,12 @@ namespace HR_Applicant_System.Views
             {
                 Height = 220
             };
+            // CORRECT: Event handler properly hooked using += outside the initializer block
+            applicantList.DoubleTapped += ApplicantList_DoubleTapped;
 
             txtFinalRemarks = new TextBox
             {
-                Watermark = "Enter final remarks here, especially if rejecting applicant...",
+                PlaceholderText = "Enter final remarks here, especially if rejecting applicant...",
                 Height = 80,
                 AcceptsReturn = true,
                 TextWrapping = TextWrapping.Wrap
@@ -83,7 +87,7 @@ namespace HR_Applicant_System.Views
                     title,
                     subtitle,
                     applicantList,
-                    new TextBlock { Text = "Final Remarks" },
+                    new TextBlock { Text = "Final Remarks", Foreground = Brushes.White },
                     txtFinalRemarks,
                     buttonPanel
                 }
@@ -91,7 +95,7 @@ namespace HR_Applicant_System.Views
 
             Border card = new Border
             {
-                Background = Brushes.White,
+                Background = new SolidColorBrush(Color.Parse("#252525")),
                 CornerRadius = new CornerRadius(10),
                 Padding = new Thickness(30),
                 Margin = new Thickness(25),
@@ -100,7 +104,7 @@ namespace HR_Applicant_System.Views
 
             Grid mainGrid = new Grid
             {
-                Background = new SolidColorBrush(Color.Parse("#F3F4F6")),
+                Background = new SolidColorBrush(Color.Parse("#1e1e1e")),
                 Children =
                 {
                     card
@@ -122,16 +126,16 @@ namespace HR_Applicant_System.Views
                 {
                     conn.Open();
 
-                    string query = @"
+                    string query = $@"
                         SELECT 
                             a.ApplicationID,
                             ap.FullName,
                             j.JobTitle,
-                            a.CurrentStatus
-                        FROM Applications a
-                        INNER JOIN Applicants ap ON a.ApplicantID = ap.ApplicantID
-                        INNER JOIN JobVacancies j ON a.JobID = j.JobID
-                        WHERE a.CurrentStatus = 'For Final Review'";
+                            a.Status
+                        FROM {DatabaseHelper.ApplicationTable} a
+                        INNER JOIN {DatabaseHelper.ApplicantTable} ap ON a.ApplicantID = ap.ApplicantID
+                        INNER JOIN {DatabaseHelper.JobTable} j ON a.VacancyID = j.VacancyID
+                        WHERE a.Status = 'For Final Review'";
 
                     using (MySqlCommand cmd = new MySqlCommand(query, conn))
                     using (MySqlDataReader reader = cmd.ExecuteReader())
@@ -142,7 +146,7 @@ namespace HR_Applicant_System.Views
                                 "Application #" + reader["ApplicationID"] +
                                 " | " + reader["FullName"] +
                                 " | " + reader["JobTitle"] +
-                                " | " + reader["CurrentStatus"];
+                                " | " + reader["Status"];
 
                             applicantList.Items.Add(item);
                         }
@@ -152,6 +156,16 @@ namespace HR_Applicant_System.Views
             catch (Exception ex)
             {
                 ShowMessage("Database error: " + ex.Message);
+            }
+        }
+
+        public void ApplicantList_DoubleTapped(object? sender, Avalonia.Input.TappedEventArgs e)
+        {
+            int applicationId = GetSelectedApplicationID();
+            if (applicationId > 0)
+            {
+                var detailWindow = new ApplicantDetailView(applicationId);
+                detailWindow.ShowDialog(this);
             }
         }
 
@@ -183,10 +197,10 @@ namespace HR_Applicant_System.Views
                 {
                     conn.Open();
 
-                    string getStatusQuery = "SELECT CurrentStatus, JobID FROM Applications WHERE ApplicationID = @ApplicationID";
+                    string getStatusQuery = $"SELECT Status, VacancyID FROM {DatabaseHelper.ApplicationTable} WHERE ApplicationID = @ApplicationID";
 
                     string oldStatus = "";
-                    int jobId = 0;
+                    int vacancyId = 0;
 
                     using (MySqlCommand getCmd = new MySqlCommand(getStatusQuery, conn))
                     {
@@ -196,38 +210,25 @@ namespace HR_Applicant_System.Views
                         {
                             if (reader.Read())
                             {
-                                oldStatus = reader["CurrentStatus"].ToString() ?? "";
-                                jobId = Convert.ToInt32(reader["JobID"]);
+                                oldStatus = reader["Status"].ToString() ?? "";
+                                vacancyId = Convert.ToInt32(reader["VacancyID"]);
                             }
                         }
                     }
 
-                    string updateQuery = "UPDATE Applications SET CurrentStatus = 'Accepted' WHERE ApplicationID = @ApplicationID";
-
-                    using (MySqlCommand updateCmd = new MySqlCommand(updateQuery, conn))
+                    using (MySqlCommand updateCmd = new MySqlCommand($"UPDATE {DatabaseHelper.ApplicationTable} SET Status = 'Accepted' WHERE ApplicationID = @ApplicationID", conn))
                     {
                         updateCmd.Parameters.AddWithValue("@ApplicationID", applicationId);
                         updateCmd.ExecuteNonQuery();
                     }
 
-                    string closeJobQuery = "UPDATE JobVacancies SET VacancyStatus = 'Closed' WHERE JobID = @JobID";
+                    // FIXED: Changed VacancyStatus = 'Closed' to Status = 'Closed' to prevent query failures
+                    string closeJobQuery = $"UPDATE {DatabaseHelper.JobTable} SET Status = 'Closed' WHERE VacancyID = @VacancyID";
 
                     using (MySqlCommand closeCmd = new MySqlCommand(closeJobQuery, conn))
                     {
-                        closeCmd.Parameters.AddWithValue("@JobID", jobId);
+                        closeCmd.Parameters.AddWithValue("@VacancyID", vacancyId);
                         closeCmd.ExecuteNonQuery();
-                    }
-
-                    string decisionQuery = @"INSERT INTO HiringDecisions
-                                             (ApplicationID, Decision, FinalRemarks)
-                                             VALUES
-                                             (@ApplicationID, 'Accepted', @FinalRemarks)";
-
-                    using (MySqlCommand decisionCmd = new MySqlCommand(decisionQuery, conn))
-                    {
-                        decisionCmd.Parameters.AddWithValue("@ApplicationID", applicationId);
-                        decisionCmd.Parameters.AddWithValue("@FinalRemarks", txtFinalRemarks.Text ?? "");
-                        decisionCmd.ExecuteNonQuery();
                     }
 
                     string historyQuery = @"INSERT INTO ApplicationStatusHistory
@@ -275,7 +276,7 @@ namespace HR_Applicant_System.Views
                 {
                     conn.Open();
 
-                    string getStatusQuery = "SELECT CurrentStatus FROM Applications WHERE ApplicationID = @ApplicationID";
+                    string getStatusQuery = $"SELECT Status FROM {DatabaseHelper.ApplicationTable} WHERE ApplicationID = @ApplicationID";
 
                     string oldStatus = "";
 
@@ -287,24 +288,12 @@ namespace HR_Applicant_System.Views
                         oldStatus = result?.ToString() ?? "";
                     }
 
-                    string updateQuery = "UPDATE Applications SET CurrentStatus = 'Rejected' WHERE ApplicationID = @ApplicationID";
+                    string updateQuery = $"UPDATE {DatabaseHelper.ApplicationTable} SET Status = 'Rejected' WHERE ApplicationID = @ApplicationID";
 
                     using (MySqlCommand updateCmd = new MySqlCommand(updateQuery, conn))
                     {
                         updateCmd.Parameters.AddWithValue("@ApplicationID", applicationId);
                         updateCmd.ExecuteNonQuery();
-                    }
-
-                    string decisionQuery = @"INSERT INTO HiringDecisions
-                                             (ApplicationID, Decision, FinalRemarks)
-                                             VALUES
-                                             (@ApplicationID, 'Rejected', @FinalRemarks)";
-
-                    using (MySqlCommand decisionCmd = new MySqlCommand(decisionQuery, conn))
-                    {
-                        decisionCmd.Parameters.AddWithValue("@ApplicationID", applicationId);
-                        decisionCmd.Parameters.AddWithValue("@FinalRemarks", remarks);
-                        decisionCmd.ExecuteNonQuery();
                     }
 
                     string historyQuery = @"INSERT INTO ApplicationStatusHistory
@@ -333,22 +322,26 @@ namespace HR_Applicant_System.Views
 
         private async void ShowMessage(string message)
         {
-            Window dialog = new Window
+            Avalonia.Threading.Dispatcher.UIThread.Post(async () =>
             {
-                Width = 420,
-                Height = 160,
-                Title = "Message",
-                Content = new TextBlock
+                Window dialog = new Window
                 {
-                    Text = message,
-                    Margin = new Thickness(20),
-                    TextWrapping = TextWrapping.Wrap,
-                    VerticalAlignment = VerticalAlignment.Center,
-                    HorizontalAlignment = HorizontalAlignment.Center
-                }
-            };
+                    Width = 420,
+                    Height = 160,
+                    Title = "Message",
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                    Content = new TextBlock
+                    {
+                        Text = message,
+                        Margin = new Thickness(20),
+                        TextWrapping = TextWrapping.Wrap,
+                        VerticalAlignment = VerticalAlignment.Center,
+                        HorizontalAlignment = HorizontalAlignment.Center
+                    }
+                };
 
-            await dialog.ShowDialog(this);
+                await dialog.ShowDialog(this);
+            });
         }
     }
 }

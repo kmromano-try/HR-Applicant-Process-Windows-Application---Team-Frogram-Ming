@@ -15,11 +15,12 @@ namespace HR_Applicant_System.Models
             using (var conn = DatabaseHelper.GetConnection())
             {
                 conn.Open();
-                // Using JOIN to get the Name from Applicants and Title from JobVacancies
-                string query = @"SELECT ap.FullName, j.JobTitle, a.CurrentStatus 
-                                FROM applications a
-                                INNER JOIN applicants ap ON a.ApplicantID = ap.ApplicantID
-                                INNER JOIN jobvacancies j ON a.JobID = j.JobID";
+                
+                // UPDATED: Added a.ApplicationID to pull the unique key for selection tracking
+                string query = $@"SELECT a.ApplicationID, ap.FullName, j.JobTitle, a.Status 
+                                FROM {DatabaseHelper.ApplicationTable} a
+                                INNER JOIN {DatabaseHelper.ApplicantTable} ap ON a.ApplicantID = ap.ApplicantID
+                                INNER JOIN {DatabaseHelper.JobTable} j ON a.VacancyID = j.VacancyID"; 
 
                 using (var cmd = new MySqlCommand(query, conn))
                 using (var reader = cmd.ExecuteReader())
@@ -28,9 +29,11 @@ namespace HR_Applicant_System.Models
                     {
                         list.Add(new ApplicantItem
                         {
+                            // UPDATED: Mapping the ApplicationID database column to the item property
+                            ApplicationID = reader.IsDBNull(reader.GetOrdinal("ApplicationID")) ? 0 : reader.GetInt32("ApplicationID"),
                             Name = reader.IsDBNull(reader.GetOrdinal("FullName")) ? string.Empty : reader.GetString("FullName"),
                             Position = reader.IsDBNull(reader.GetOrdinal("JobTitle")) ? string.Empty : reader.GetString("JobTitle"),
-                            Status = reader.IsDBNull(reader.GetOrdinal("CurrentStatus")) ? string.Empty : reader.GetString("CurrentStatus")
+                            Status = reader.IsDBNull(reader.GetOrdinal("Status")) ? string.Empty : reader.GetString("Status")
                         });
                     }
                 }
@@ -45,8 +48,7 @@ namespace HR_Applicant_System.Models
                 using (var conn = DatabaseHelper.GetConnection())
                 {
                     conn.Open();
-                    // Aligned with the snake_case naming used in GetAllActiveApplications
-                    string query = "UPDATE applications SET current_status = @status WHERE application_id = @id";
+                    string query = $"UPDATE {DatabaseHelper.ApplicationTable} SET Status = @status WHERE ApplicationID = @id";
                     using (var cmd = new MySqlCommand(query, conn))
                     {
                         cmd.Parameters.AddWithValue("@status", newStatus);

@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
@@ -23,13 +23,14 @@ namespace HR_Applicant_System.Views
             {
                 Text = "Recruitment Reports",
                 FontSize = 26,
-                FontWeight = FontWeight.Bold
+                FontWeight = FontWeight.Bold,
+                Foreground = Brushes.White
             };
 
             TextBlock subtitle = new TextBlock
             {
                 Text = "Admin/Manager can view recruitment summaries and generate basic reports.",
-                Foreground = Brushes.Gray,
+                Foreground = new SolidColorBrush(Color.Parse("#e0e0e0")),
                 TextWrapping = TextWrapping.Wrap
             };
 
@@ -68,7 +69,7 @@ namespace HR_Applicant_System.Views
 
             Border card = new Border
             {
-                Background = Brushes.White,
+                Background = new SolidColorBrush(Color.Parse("#252525")),
                 CornerRadius = new CornerRadius(10),
                 Padding = new Thickness(30),
                 Margin = new Thickness(25),
@@ -77,7 +78,7 @@ namespace HR_Applicant_System.Views
 
             Grid mainGrid = new Grid
             {
-                Background = new SolidColorBrush(Color.Parse("#F3F4F6")),
+                Background = new SolidColorBrush(Color.Parse("#1e1e1e")),
                 Children =
                 {
                     card
@@ -127,11 +128,10 @@ namespace HR_Applicant_System.Views
                 {
                     conn.Open();
 
-                    string query = @"
-                        SELECT JobID, JobTitle, Department, VacancyStatus, CreatedAt
-                        FROM JobVacancies
-                        WHERE VacancyStatus = 'Active'
-                        ORDER BY CreatedAt DESC";
+                    string query = $@"
+                        SELECT VacancyID, JobTitle, Department, Status
+                        FROM {DatabaseHelper.JobTable}
+                        WHERE Status = 'Active'";
 
                     using (MySqlCommand cmd = new MySqlCommand(query, conn))
                     using (MySqlDataReader reader = cmd.ExecuteReader())
@@ -139,11 +139,10 @@ namespace HR_Applicant_System.Views
                         while (reader.Read())
                         {
                             string item =
-                                "Job #" + reader["JobID"] +
+                                "Job #" + reader["VacancyID"] +
                                 " | " + reader["JobTitle"] +
                                 " | " + reader["Department"] +
-                                " | Status: " + reader["VacancyStatus"] +
-                                " | Posted: " + Convert.ToDateTime(reader["CreatedAt"]).ToString("MMM dd, yyyy");
+                                " | Status: " + reader["Status"];
 
                             jobList.Items.Add(item);
                         }
@@ -170,12 +169,13 @@ namespace HR_Applicant_System.Views
                     {
                         Text = "Active Job Vacancies Report",
                         FontSize = 24,
-                        FontWeight = FontWeight.Bold
+                        FontWeight = FontWeight.Bold,
+                        Foreground = Brushes.White
                     },
                     new TextBlock
                     {
                         Text = "This report shows all job vacancies currently marked as Active.",
-                        Foreground = Brushes.Gray,
+                        Foreground = new SolidColorBrush(Color.Parse("#e0e0e0")),
                         TextWrapping = TextWrapping.Wrap
                     },
                     jobList
@@ -188,22 +188,25 @@ namespace HR_Applicant_System.Views
 
         private async void ShowMessage(string message)
         {
-            Window dialog = new Window
+            Avalonia.Threading.Dispatcher.UIThread.Post(async () =>
             {
-                Width = 430,
-                Height = 160,
-                Title = "Message",
-                Content = new TextBlock
+                Window dialog = new Window
                 {
-                    Text = message,
-                    Margin = new Thickness(20),
-                    TextWrapping = TextWrapping.Wrap,
-                    VerticalAlignment = VerticalAlignment.Center,
-                    HorizontalAlignment = HorizontalAlignment.Center
-                }
-            };
+                    Width = 430,
+                    Height = 160,
+                    Title = "Message",
+                    Content = new TextBlock
+                    {
+                        Text = message,
+                        Margin = new Thickness(20),
+                        TextWrapping = TextWrapping.Wrap,
+                        VerticalAlignment = VerticalAlignment.Center,
+                        HorizontalAlignment = HorizontalAlignment.Center
+                    }
+                };
 
-            await dialog.ShowDialog(this);
+                await dialog.ShowDialog(this);
+            });
         }
     }
 }
