@@ -2527,19 +2527,19 @@
     ]
   },
   "packageFolders": {
-    "/Users/kyle/.nuget/packages/": {}
+    "/Users/hgwhsnri/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/kyle/Desktop/Application App Capstone_Project/HR_Applicant_System/HR_Applicant_System.csproj",
+      "projectUniqueName": "/Users/hgwhsnri/Frogram Ming/HR-Applicant-Process-Windows-Application---Team-Frogram-Ming/HR_Applicant_System.csproj",
       "projectName": "HR_Applicant_System",
-      "projectPath": "/Users/kyle/Desktop/Application App Capstone_Project/HR_Applicant_System/HR_Applicant_System.csproj",
-      "packagesPath": "/Users/kyle/.nuget/packages/",
-      "outputPath": "/Users/kyle/Desktop/Application App Capstone_Project/HR_Applicant_System/obj/",
+      "projectPath": "/Users/hgwhsnri/Frogram Ming/HR-Applicant-Process-Windows-Application---Team-Frogram-Ming/HR_Applicant_System.csproj",
+      "packagesPath": "/Users/hgwhsnri/.nuget/packages/",
+      "outputPath": "/Users/hgwhsnri/Frogram Ming/HR-Applicant-Process-Windows-Application---Team-Frogram-Ming/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "/Users/kyle/.nuget/NuGet/NuGet.Config"
+        "/Users/hgwhsnri/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net10.0"
