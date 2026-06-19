@@ -93,7 +93,6 @@ namespace HR_Applicant_System.Views
                 using (var conn = DatabaseHelper.GetConnection())
                 {
                     conn.Open();
-                    // Fetch profile details immediately during login
                     string query = $"SELECT FullName, Bio FROM {DatabaseHelper.StaffTable} WHERE Email = @Email AND Password = @Password";
                     using (var cmd = new MySqlCommand(query, conn))
                     {
@@ -107,17 +106,17 @@ namespace HR_Applicant_System.Views
                                 string dbName = reader.IsDBNull(reader.GetOrdinal("FullName")) ? "" : reader.GetString("FullName");
                                 string dbBio = reader.IsDBNull(reader.GetOrdinal("Bio")) ? "" : reader.GetString("Bio");
                                 
-                                // Pass the real database data to the ViewModel
                                 var viewModel = new ApplicantListViewModel(email)
                                 {
                                     FullName = dbName,
                                     Bio = dbBio
                                 };
 
-                                var staffWindow = new Window { Title = "HR Staff Portal", Width = 1000, Height = 700, WindowStartupLocation = WindowStartupLocation.CenterScreen, Content = new ApplicantListView { DataContext = viewModel } };
+                                var staffWindow = new StaffView
+                                {
+                                    DataContext = viewModel
+                                };
                                 
-                                // Stability fix: Hide this window first, show the new one, then close this one 
-                                // on a background priority to ensure the app lifetime transitions correctly.
                                 this.Hide();
                                 staffWindow.Show();
                                 Avalonia.Threading.Dispatcher.UIThread.Post(this.Close, DispatcherPriority.ApplicationIdle);
@@ -127,12 +126,14 @@ namespace HR_Applicant_System.Views
                     }
                 }
             }
-            catch (Exception ex) { ShowMessage("Error", ex.Message); }
+            catch (Exception ex) 
+            { 
+                ShowMessage("Error", ex.Message); 
+            }
         }
 
         private void ShowMessage(string title, string message)
         {
-            // Ensure error dialogs don't crash the app if triggered from a background attempt
             Avalonia.Threading.Dispatcher.UIThread.Post(() => {
                 var dialog = new Window { Width = 350, Height = 150, Title = title, Background = Brush.Parse("#1e1e1e"), Content = new TextBlock { Text = message, Foreground = Brushes.White, Margin = new Thickness(20), TextWrapping = TextWrapping.Wrap, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center } };
                 dialog.ShowDialog(this);

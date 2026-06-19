@@ -1,11 +1,38 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:views="clr-namespace:HR_Applicant_System.Views"
+        xmlns:vm="clr-namespace:HR_Applicant_System.ViewModels"
         x:Class="HR_Applicant_System.Views.StaffView"
-        Title="HR Staff Portal" Width="800" Height="600">
-    <Grid>
-        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-            <TextBlock Text="HR Staff Dashboard" FontSize="30" FontWeight="Bold" Foreground="Blue"/>
-            <TextBlock Text="Reviewing applications..." HorizontalAlignment="Center"/>
-        </StackPanel>
+        x:DataType="vm:ApplicantListViewModel"
+        Title="HR Staff Portal" 
+        Width="1000" 
+        Height="700"
+        WindowStartupLocation="CenterScreen"
+        Background="#1e1e1e">
+    
+    <Grid RowDefinitions="Auto,*">
+        <Border Grid.Row="0" Background="#1F2937" Padding="15">
+            <Grid ColumnDefinitions="*,Auto">
+                <StackPanel Grid.Column="0" Orientation="Vertical" VerticalAlignment="Center">
+                    <TextBlock Text="HR Staff Dashboard" FontSize="22" FontWeight="Bold" Foreground="White"/>
+                    <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,4,0,0">
+                        <TextBlock Text="Active Reviewer:" Foreground="#9ca3af" FontSize="12"/>
+                        <TextBlock Text="{Binding FullName}" Foreground="#60a5fa" FontSize="12" FontWeight="SemiBold"/>
+                    </StackPanel>
+                </StackPanel>
+                
+                <Button Grid.Column="1" 
+                        Content="Logout" 
+                        Background="#dc2626" 
+                        Foreground="White" 
+                        Padding="15,7" 
+                        FontWeight="Bold"
+                        Click="Logout_Click"/>
+            </Grid>
+        </Border>
+
+        <Grid Grid.Row="1" Margin="20">
+            <views:ApplicantListView />
+        </Grid>
     </Grid>
 </Window>
