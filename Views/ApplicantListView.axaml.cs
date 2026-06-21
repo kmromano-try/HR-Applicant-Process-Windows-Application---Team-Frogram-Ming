@@ -2,7 +2,6 @@ using System;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using HR_Applicant_System.ViewModels;
-using HR_Applicant_System.Views;
 
 namespace HR_Applicant_System.Views
 {
@@ -12,11 +11,9 @@ namespace HR_Applicant_System.Views
         {
             InitializeComponent();
 
-            // Hooking into the "My Profile" button click to open the standalone window
             var btn = this.FindControl<Button>("btnMyProfile");
             if (btn != null) btn.Click += MyProfile_Click;
 
-            // Trigger initial data load when the control is loaded into the visual tree
             this.Loaded += (s, e) =>
             {
                 try
@@ -35,7 +32,6 @@ namespace HR_Applicant_System.Views
 
         private void MyProfile_Click(object? sender, RoutedEventArgs e)
         {
-            // Open the standalone profile window and share the current DataContext
             var profileWindow = new StaffProfileView();
             profileWindow.DataContext = this.DataContext;
             profileWindow.Show();

@@ -93,7 +93,6 @@ namespace HR_Applicant_System.ViewModels
             set => this.RaiseAndSetIfChanged(ref _bio, value);
         }
 
-        // NEW: Tracks which applicant line item is currently highlighted or clicked in the UI DataGrid
         private ApplicantItem? _selectedApplicant;
         public ApplicantItem? SelectedApplicant
         {
@@ -105,8 +104,6 @@ namespace HR_Applicant_System.ViewModels
 
         public ICommand SaveProfile { get; }
         public ICommand RefreshDashboard { get; }
-        
-        // NEW: Evaluation command endpoints
         public ICommand PassApplication { get; }
         public ICommand FailApplication { get; }
 
@@ -120,8 +117,6 @@ namespace HR_Applicant_System.ViewModels
 
             SaveProfile = new AsyncCommand(ExecuteSaveProfile);
             RefreshDashboard = new AsyncCommand(ExecuteRefreshDashboard);
-            
-            // NEW: Instantiating evaluation pipeline endpoints
             PassApplication = new AsyncCommand(ExecutePassApplication);
             FailApplication = new AsyncCommand(ExecuteFailApplication);
         }
@@ -144,7 +139,6 @@ namespace HR_Applicant_System.ViewModels
             });
         }
 
-        // NEW: Passes current candidate to final pipeline review status
         private async Task ExecutePassApplication()
         {
             if (SelectedApplicant == null) return;
@@ -154,12 +148,10 @@ namespace HR_Applicant_System.ViewModels
 
             if (success)
             {
-                // Refresh grid view records instantly
                 await ExecuteRefreshDashboard();
             }
         }
 
-        // NEW: Registers a rejected status payload block for current record
         private async Task ExecuteFailApplication()
         {
             if (SelectedApplicant == null) return;
@@ -169,7 +161,6 @@ namespace HR_Applicant_System.ViewModels
 
             if (success)
             {
-                // Refresh grid view records instantly
                 await ExecuteRefreshDashboard();
             }
         }
@@ -227,7 +218,6 @@ namespace HR_Applicant_System.ViewModels
 
     public class ApplicantItem
     {
-        // NEW: Holds reference identification schema index row tracking data
         public int ApplicationID { get; set; }
         public string Name { get; set; } = string.Empty;
         public string Position { get; set; } = string.Empty;
