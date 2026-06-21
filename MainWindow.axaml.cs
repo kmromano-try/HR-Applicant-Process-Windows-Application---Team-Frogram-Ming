@@ -1,58 +1,38 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using Avalonia.Media;
-using HR_Applicant_System.Views;
 using System;
+using HR_Applicant_System.Views;
 
-namespace HR_Applicant_System
+namespace HR_Applicant_System;
+
+public partial class MainWindow : Window
 {
-    public partial class MainWindow : Window
+    public MainWindow()
     {
-        public MainWindow()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
+    }
 
-        public void Applicant_Click(object? sender, RoutedEventArgs e)
+    public void Applicant_Click(object? sender, RoutedEventArgs e)
+    {
+        try
         {
-            try
-            {
-                ApplicantView applicantView = new ApplicantView();
-                applicantView.Show();
-                this.Close();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"[CRITICAL] Error launching Applicant Portal: {ex.Message}");
-            }
+            ApplicantView applicantView = new ApplicantView(0);
+            applicantView.Show();
+            this.Close();
         }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error opening Applicant Portal: {ex.Message}");
+        }
+    }
 
-        public void Staff_Click(object? sender, RoutedEventArgs e)
-        {
-            try
-            {
-                StaffLoginView staffLogin = new StaffLoginView();
-                staffLogin.Show();
-                this.Close();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"[CRITICAL] Error launching Staff Portal: {ex.Message}");
-            }
-        }
+    public void Staff_Click(object? sender, RoutedEventArgs e)
+    {
+        Console.WriteLine("Staff portal not yet connected.");
+    }
 
-        public void Admin_Click(object? sender, RoutedEventArgs e)
-        {
-            try
-            {
-                AdminLoginView adminLoginView = new AdminLoginView();
-                adminLoginView.Show();
-                this.Close();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"[CRITICAL] Error launching Admin Dashboard: {ex.Message}");
-            }
-        }
+    public void Admin_Click(object? sender, RoutedEventArgs e)
+    {
+        Console.WriteLine("Admin portal not yet connected.");
     }
 }

@@ -6,7 +6,8 @@ namespace HR_Applicant_System.Models
     public static class DatabaseHelper
     {
         // Strictly configured for your MacBook local setup
-        private static string ConnectionString = "Server=localhost;Port=3306;Database=hr_applicant_system;Uid=root;Pwd=;";
+        private static string ConnectionString =
+"Server=localhost;Port=3306;Database=hr_applicant_system;Uid=root;Pwd=root123;";
 
         public static string StaffTable => "Staff_Accounts";
         public static string JobTable => "Job_Listings";
