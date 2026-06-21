@@ -1,6 +1,5 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using System;
 
 namespace HR_Applicant_System.Views
 {
@@ -11,19 +10,23 @@ namespace HR_Applicant_System.Views
             InitializeComponent();
         }
 
+        private void FinalReview_Click(object? sender, RoutedEventArgs e)
+        {
+            var finalReviewWindow = new FinalReviewView();
+            finalReviewWindow.ShowDialog(this);
+        }
+
+        private void RejectedQueue_Click(object? sender, RoutedEventArgs e)
+        {
+            var rejectedQueueWindow = new RejectedQueueView();
+            rejectedQueueWindow.ShowDialog(this);
+        }
+
         private void Logout_Click(object? sender, RoutedEventArgs e)
         {
-            try
-            {
-                // Safely drop back to the main portal menu window upon logging out
-                MainWindow mainWindow = new MainWindow();
-                mainWindow.Show();
-                this.Close();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"[CRITICAL] Error handling staff logout sequence: {ex.Message}");
-            }
+            var mainWindow = new MainWindow();
+            mainWindow.Show();
+            this.Close();
         }
     }
 }

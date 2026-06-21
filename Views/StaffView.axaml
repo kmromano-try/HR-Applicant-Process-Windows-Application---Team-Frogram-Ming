@@ -21,13 +21,28 @@
                     </StackPanel>
                 </StackPanel>
                 
-                <Button Grid.Column="1" 
-                        Content="Logout" 
-                        Background="#dc2626" 
-                        Foreground="White" 
-                        Padding="15,7" 
-                        FontWeight="Bold"
-                        Click="Logout_Click"/>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+                    <Button Content="Final Review Queue" 
+                            Background="#10B981" 
+                            Foreground="White" 
+                            Padding="15,7" 
+                            FontWeight="Bold"
+                            Click="FinalReview_Click"/>
+                            
+                    <Button Content="Rejected Queue" 
+                            Background="#4B5563" 
+                            Foreground="White" 
+                            Padding="15,7" 
+                            FontWeight="Bold"
+                            Click="RejectedQueue_Click"/>
+
+                    <Button Content="Logout" 
+                            Background="#dc2626" 
+                            Foreground="White" 
+                            Padding="15,7" 
+                            FontWeight="Bold"
+                            Click="Logout_Click"/>
+                </StackPanel>
             </Grid>
         </Border>
 

@@ -1,5 +1,41 @@
 <Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="HR_Applicant_System.Views.FinalReviewView"
+        Title="Staff Approved Queue"
         Width="750"
         Height="540"
-        Title="Staff Approved Queue">
+        WindowStartupLocation="CenterOwner"
+        Background="#1e1e1e">
+
+    <Border Background="#252525" CornerRadius="10" Padding="30" Margin="25">
+        <StackPanel Spacing="15">
+            <TextBlock Text="Staff Approved Queue" FontSize="26" FontWeight="Bold" Foreground="White"/>
+            <TextBlock Text="Applicants in this section are waiting for Admin/Manager final decision." 
+                       Foreground="#e0e0e0" TextWrapping="Wrap"/>
+            
+            <!-- ListBox defined with Name for C# access -->
+            <ListBox Name="applicantList" Height="220" DoubleTapped="ApplicantList_DoubleTapped" />
+            
+            <TextBlock Text="Final Remarks" Foreground="White" />
+            
+            <!-- TextBox defined with Name for C# access -->
+            <TextBox Name="txtFinalRemarks" 
+                     PlaceholderText="Enter final remarks here, especially if rejecting applicant..." 
+                     Height="80" 
+                     AcceptsReturn="True" 
+                     TextWrapping="Wrap"/>
+
+            <StackPanel Orientation="Horizontal" Spacing="15">
+                <Button Content="Final Approve / Hire" 
+                        Click="Approve_Click" 
+                        Height="42" Width="180" 
+                        Background="#10B981" Foreground="White"/>
+                
+                <Button Content="Overrule / Reject" 
+                        Click="Reject_Click" 
+                        Height="42" Width="180" 
+                        Background="#EF4444" Foreground="White"/>
+            </StackPanel>
+        </StackPanel>
+    </Border>
 </Window>

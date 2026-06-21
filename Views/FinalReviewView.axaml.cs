@@ -38,9 +38,11 @@ namespace HR_Applicant_System.Views
 
             applicantList = new ListBox
             {
-                Height = 220
+                Height = 220,
+                Background = new SolidColorBrush(Color.Parse("#1e1e1e")),
+                Foreground = Brushes.White
             };
-            // CORRECT: Event handler properly hooked using += outside the initializer block
+            
             applicantList.DoubleTapped += ApplicantList_DoubleTapped;
 
             txtFinalRemarks = new TextBox
@@ -48,21 +50,33 @@ namespace HR_Applicant_System.Views
                 PlaceholderText = "Enter final remarks here, especially if rejecting applicant...",
                 Height = 80,
                 AcceptsReturn = true,
-                TextWrapping = TextWrapping.Wrap
+                TextWrapping = TextWrapping.Wrap,
+                Background = new SolidColorBrush(Color.Parse("#1e1e1e")),
+                Foreground = Brushes.White
             };
 
             Button btnApprove = new Button
             {
                 Content = "Final Approve / Hire",
                 Height = 42,
-                Width = 180
+                Width = 180,
+                Background = new SolidColorBrush(Color.Parse("#10B981")),
+                Foreground = Brushes.White,
+                FontWeight = FontWeight.Bold,
+                HorizontalContentAlignment = HorizontalAlignment.Center,
+                VerticalContentAlignment = VerticalAlignment.Center
             };
 
             Button btnReject = new Button
             {
                 Content = "Overrule / Reject",
                 Height = 42,
-                Width = 180
+                Width = 180,
+                Background = new SolidColorBrush(Color.Parse("#EF4444")),
+                Foreground = Brushes.White,
+                FontWeight = FontWeight.Bold,
+                HorizontalContentAlignment = HorizontalAlignment.Center,
+                VerticalContentAlignment = VerticalAlignment.Center
             };
 
             btnApprove.Click += Approve_Click;
@@ -87,7 +101,7 @@ namespace HR_Applicant_System.Views
                     title,
                     subtitle,
                     applicantList,
-                    new TextBlock { Text = "Final Remarks", Foreground = Brushes.White },
+                    new TextBlock { Text = "Final Remarks", Foreground = Brushes.White, FontWeight = FontWeight.SemiBold },
                     txtFinalRemarks,
                     buttonPanel
                 }
@@ -222,7 +236,6 @@ namespace HR_Applicant_System.Views
                         updateCmd.ExecuteNonQuery();
                     }
 
-                    // FIXED: Changed VacancyStatus = 'Closed' to Status = 'Closed' to prevent query failures
                     string closeJobQuery = $"UPDATE {DatabaseHelper.JobTable} SET Status = 'Closed' WHERE VacancyID = @VacancyID";
 
                     using (MySqlCommand closeCmd = new MySqlCommand(closeJobQuery, conn))
@@ -320,7 +333,7 @@ namespace HR_Applicant_System.Views
             }
         }
 
-        private async void ShowMessage(string message)
+        private void ShowMessage(string message)
         {
             Avalonia.Threading.Dispatcher.UIThread.Post(async () =>
             {
@@ -328,15 +341,18 @@ namespace HR_Applicant_System.Views
                 {
                     Width = 420,
                     Height = 160,
-                    Title = "Message",
+                    Title = "System Notification",
                     WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                    Background = new SolidColorBrush(Color.Parse("#252525")),
                     Content = new TextBlock
                     {
                         Text = message,
                         Margin = new Thickness(20),
+                        Foreground = Brushes.White,
                         TextWrapping = TextWrapping.Wrap,
                         VerticalAlignment = VerticalAlignment.Center,
-                        HorizontalAlignment = HorizontalAlignment.Center
+                        HorizontalAlignment = HorizontalAlignment.Center,
+                        FontSize = 14
                     }
                 };
 
