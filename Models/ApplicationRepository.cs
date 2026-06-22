@@ -6,16 +6,26 @@ namespace HR_Applicant_System.Models
 {
     public class ApplicationRepository
     {
-        private readonly string _connectionString = "Server=localhost;Database=hr_capstone_db;Uid=root;Pwd=;";
-
         public List<Application> GetAllActiveApplications()
         {
             var applications = new List<Application>();
 
-            using (var conn = new MySqlConnection(_connectionString))
+            using (var conn = DatabaseHelper.GetConnection())
             {
                 conn.Open();
-                var query = "SELECT id, name, position, status, hr_remarks FROM applications";
+                
+                // Real SQL Query mapped precisely to your MySQL Workbench schema columns
+                string query = $@"
+                    SELECT 
+                        a.ApplicationID, 
+                        ap.FullName, 
+                        j.JobTitle, 
+                        a.Status, 
+                        a.StaffFeedback
+                    FROM {DatabaseHelper.ApplicationTable} a
+                    INNER JOIN {DatabaseHelper.ApplicantTable} ap ON a.ApplicantID = ap.ApplicantID
+                    INNER JOIN {DatabaseHelper.JobTable} j ON a.VacancyID = j.VacancyID";
+
                 using (var cmd = new MySqlCommand(query, conn))
                 {
                     using (var reader = cmd.ExecuteReader())
@@ -24,11 +34,11 @@ namespace HR_Applicant_System.Models
                         {
                             applications.Add(new Application
                             {
-                                Id = reader.GetInt32("id"),
-                                Name = reader.GetString("name"),
-                                Position = reader.GetString("position"),
-                                Status = reader.GetString("status"),
-                                HRRemarks = reader.IsDBNull(reader.GetOrdinal("hr_remarks")) ? string.Empty : reader.GetString("hr_remarks")
+                                Id = reader.GetInt32("ApplicationID"),
+                                Name = reader.IsDBNull(reader.GetOrdinal("FullName")) ? "Unknown Candidate" : reader.GetString("FullName"),
+                                Position = reader.IsDBNull(reader.GetOrdinal("JobTitle")) ? "Unassigned Position" : reader.GetString("JobTitle"),
+                                Status = reader.IsDBNull(reader.GetOrdinal("Status")) ? "Pending" : reader.GetString("Status"),
+                                HRRemarks = reader.IsDBNull(reader.GetOrdinal("StaffFeedback")) ? string.Empty : reader.GetString("StaffFeedback")
                             });
                         }
                     }
@@ -40,10 +50,12 @@ namespace HR_Applicant_System.Models
 
         public void UpdateApplicationStatus(Application application)
         {
-            using (var conn = new MySqlConnection(_connectionString))
+            using (var conn = DatabaseHelper.GetConnection())
             {
                 conn.Open();
-                var query = "UPDATE applications SET status = @status, hr_remarks = @hrRemarks WHERE id = @id";
+                
+                // Realigned update schema matching your database keys
+                var query = $"UPDATE {DatabaseHelper.ApplicationTable} SET Status = @status, StaffFeedback = @hrRemarks WHERE ApplicationID = @id";
                 using (var cmd = new MySqlCommand(query, conn))
                 {
                     cmd.Parameters.AddWithValue("@status", application.Status);

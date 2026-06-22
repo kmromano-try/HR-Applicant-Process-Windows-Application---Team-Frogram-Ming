@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:views="clr-namespace:HR_Applicant_System.Views"
              xmlns:vm="using:HR_Applicant_System.ViewModels"
              xmlns:models="using:HR_Applicant_System.Models"
              mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="600"
@@ -41,7 +42,7 @@
             <Grid Grid.Row="0" ColumnDefinitions="*, Auto" Margin="0,0,0,20">
                 <StackPanel Grid.Column="0">
                     <TextBlock Text="Applicant Evaluation Pipeline" FontSize="20" FontWeight="Bold" Foreground="#FFFFFF"/>
-                    <TextBlock Text="Live tracking records connected to hr_capstone_db" FontSize="12" Foreground="#E0E0E0"/>
+                    <TextBlock Text="Live tracking records connected to hr_applicant_system" FontSize="12" Foreground="#10B981"/>
                 </StackPanel>
                 
                 <Button Grid.Column="1"
@@ -53,17 +54,20 @@
                         FontWeight="SemiBold"/>
             </Grid>
             
-            <ListBox Grid.Row="1" ItemsSource="{Binding Applicants}" Name="applicantList">
+            <ListBox Grid.Row="1" 
+                     ItemsSource="{Binding FilteredApplicants}" 
+                     SelectedItem="{Binding SelectedApplicant}"
+                     Name="applicantList">
                 <ListBox.ItemTemplate>
                     <DataTemplate x:DataType="models:Application">
                         <Border BorderBrush="#333333" BorderThickness="1" CornerRadius="4" Padding="10" Margin="0,2">
                             <Grid ColumnDefinitions="*, Auto">
                                 <StackPanel Grid.Column="0" Spacing="5">
-                                    <TextBlock Text="{Binding Name}" FontWeight="Bold" FontSize="14"/>
+                                    <TextBlock Text="{Binding Name}" FontWeight="Bold" FontSize="14" Foreground="White"/>
                                     <TextBlock Text="{Binding Position}" Foreground="LightGray" FontSize="12"/>
                                 </StackPanel>
                                 <TextBlock Grid.Column="1" Text="{Binding Status}" 
-                                           Foreground="#10B981" VerticalAlignment="Center" FontWeight="Bold"/>
+                                           Foreground="#FFB300" VerticalAlignment="Center" FontWeight="Bold"/>
                             </Grid>
                         </Border>
                     </DataTemplate>

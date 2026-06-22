@@ -128,17 +128,25 @@ namespace HR_Applicant_System.ViewModels
         {
             try
             {
+                Console.WriteLine("[DASHBOARD] Fetching applications from the database...");
                 var records = _repo.GetAllActiveApplications();
+                
                 if (records != null)
                 {
+                    Console.WriteLine($"[DASHBOARD] Successfully read {records.Count} total rows from database.");
+                    
                     var staffReviewOnly = records.FindAll(a => a.Status != "For Final Review");
                     Applicants = new ObservableCollection<Application>(staffReviewOnly);
                     
                     UpdateMetrics(records);
+                    Console.WriteLine($"[DASHBOARD] Pipeline tracking collection populated with {Applicants.Count} active apps.");
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine($"\n[CRITICAL DASHBOARD ERROR] The dashboard loading sequence crashed!");
+                Console.WriteLine($"Error Message: {ex.Message}");
+                Console.WriteLine($"Stack Trace:\n{ex.StackTrace}\n");
             }
         }
 

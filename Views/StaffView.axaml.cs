@@ -1,5 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using HR_Applicant_System.ViewModels;
+using System;
 
 namespace HR_Applicant_System.Views
 {
@@ -8,6 +10,11 @@ namespace HR_Applicant_System.Views
         public StaffView()
         {
             InitializeComponent();
+            
+            // Centralize data routing at the parent window level
+            var viewModel = new ApplicantListViewModel();
+            this.DataContext = viewModel;
+            viewModel.RefreshDashboard();
         }
 
         private void FinalReview_Click(object? sender, RoutedEventArgs e)
