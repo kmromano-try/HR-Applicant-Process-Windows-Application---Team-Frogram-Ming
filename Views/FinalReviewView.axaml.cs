@@ -30,20 +30,12 @@ namespace HR_Applicant_System.Views
             if (btnApprove != null) btnApprove.Click += BtnApprove_Click;
         }
 
-        private void BtnApprove_Click(object? sender, RoutedEventArgs e)
-        {
-            ExecuteDecision("Approved");
-        }
-
-        private void BtnReject_Click(object? sender, RoutedEventArgs e)
-        {
-            ExecuteDecision("Rejected");
-        }
+        private void BtnApprove_Click(object? sender, RoutedEventArgs e) => ExecuteDecision("Approved");
+        private void BtnReject_Click(object? sender, RoutedEventArgs e) => ExecuteDecision("Rejected");
 
         private void ExecuteDecision(string status)
         {
             string remarks = txtFinalRemarks?.Text ?? "";
-
             if (string.IsNullOrWhiteSpace(remarks))
             {
                 ShowMessage("Please enter final decision remarks.");
@@ -57,7 +49,7 @@ namespace HR_Applicant_System.Views
             }
             catch (Exception ex)
             {
-                ShowMessage("Error saving executive action: " + ex.Message);
+                ShowMessage("Error: " + ex.Message);
             }
         }
 
@@ -65,21 +57,7 @@ namespace HR_Applicant_System.Views
         {
             Avalonia.Threading.Dispatcher.UIThread.Post(() =>
             {
-                Window dialog = new Window
-                {
-                    Width = 380,
-                    Height = 150,
-                    Title = "System Notification",
-                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                    Content = new TextBlock
-                    {
-                        Text = message,
-                        Margin = new Thickness(20),
-                        TextWrapping = Avalonia.Media.TextWrapping.Wrap,
-                        VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
-                        HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center
-                    }
-                };
+                Window dialog = new Window { Width = 380, Height = 150, Title = "Notification", WindowStartupLocation = WindowStartupLocation.CenterOwner, Content = new TextBlock { Text = message, Margin = new Thickness(20), TextWrapping = Avalonia.Media.TextWrapping.Wrap, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center } };
                 dialog.ShowDialog(this);
             });
         }

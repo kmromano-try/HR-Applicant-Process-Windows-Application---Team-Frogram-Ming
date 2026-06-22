@@ -16,15 +16,15 @@ namespace HR_Applicant_System.Views
 
         public void PublishJob_Click(object? sender, RoutedEventArgs e)
         {
+            // Use null-conditional operator (?) to safely access the Text property
             string jobTitle = txtJobTitle?.Text ?? "";
-            string department = txtDepartment?.Text ?? "";
-            string description = txtDescription?.Text ?? "";
-            string qualifications = txtQualifications?.Text ?? "";
+            string dept = txtDepartment?.Text ?? "";
+            string desc = txtDescription?.Text ?? "";
+            string qual = txtQualifications?.Text ?? "";
 
-            if (string.IsNullOrWhiteSpace(jobTitle) || string.IsNullOrWhiteSpace(department) ||
-                string.IsNullOrWhiteSpace(description) || string.IsNullOrWhiteSpace(qualifications))
+            if (string.IsNullOrWhiteSpace(jobTitle) || string.IsNullOrWhiteSpace(dept))
             {
-                ShowMessage("Please fill out all job vacancy fields.");
+                ShowMessage("Please fill out all mandatory fields.");
                 return;
             }
 
@@ -33,31 +33,29 @@ namespace HR_Applicant_System.Views
                 using (MySqlConnection conn = DatabaseHelper.GetConnection())
                 {
                     conn.Open();
-                    string insertQuery = $@"INSERT INTO {DatabaseHelper.JobTable}
-                               (JobTitle, Department, JobDescription, Qualifications, Status)
-                               VALUES
-                               (@JobTitle, @Department, @JobDescription, @Qualifications, 'Active')";
-
-                    using (MySqlCommand cmd = new MySqlCommand(insertQuery, conn))
+                    string query = $"INSERT INTO {DatabaseHelper.JobTable} (JobTitle, Department, JobDescription, Qualifications, Status) VALUES (@T, @D, @Desc, @Q, 'Active')";
+                    
+                    using (MySqlCommand cmd = new MySqlCommand(query, conn))
                     {
-                        cmd.Parameters.AddWithValue("@JobTitle", jobTitle.Trim());
-                        cmd.Parameters.AddWithValue("@Department", department.Trim());
-                        cmd.Parameters.AddWithValue("@JobDescription", description.Trim());
-                        cmd.Parameters.AddWithValue("@Qualifications", qualifications.Trim());
+                        cmd.Parameters.AddWithValue("@T", jobTitle.Trim());
+                        cmd.Parameters.AddWithValue("@D", dept.Trim());
+                        cmd.Parameters.AddWithValue("@Desc", desc.Trim());
+                        cmd.Parameters.AddWithValue("@Q", qual.Trim());
                         cmd.ExecuteNonQuery();
                     }
 
                     ShowMessage("Job vacancy published successfully.");
                     
+                    // Reset fields safely
                     if (txtJobTitle != null) txtJobTitle.Text = "";
                     if (txtDepartment != null) txtDepartment.Text = "";
                     if (txtDescription != null) txtDescription.Text = "";
                     if (txtQualifications != null) txtQualifications.Text = "";
                 }
             }
-            catch (Exception ex)
-            {
-                ShowMessage("Database error: " + ex.Message);
+            catch (Exception ex) 
+            { 
+                ShowMessage("Database error: " + ex.Message); 
             }
         }
 
@@ -65,20 +63,20 @@ namespace HR_Applicant_System.Views
         {
             Avalonia.Threading.Dispatcher.UIThread.Post(() =>
             {
-                Window dialog = new Window
-                {
-                    Width = 380,
-                    Height = 150,
-                    Title = "Message",
-                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                    Content = new TextBlock
-                    {
-                        Text = message,
-                        Margin = new Thickness(20),
-                        TextWrapping = Avalonia.Media.TextWrapping.Wrap,
-                        VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
-                        HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center
-                    }
+                Window dialog = new Window 
+                { 
+                    Width = 380, 
+                    Height = 150, 
+                    Title = "Notification", 
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner, 
+                    Content = new TextBlock 
+                    { 
+                        Text = message, 
+                        Margin = new Thickness(20), 
+                        TextWrapping = Avalonia.Media.TextWrapping.Wrap, 
+                        VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, 
+                        HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center 
+                    } 
                 };
                 dialog.ShowDialog(this);
             });
