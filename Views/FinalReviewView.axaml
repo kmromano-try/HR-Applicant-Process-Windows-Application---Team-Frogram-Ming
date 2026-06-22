@@ -1,41 +1,41 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:models="using:HR_Applicant_System.Models"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="500"
         x:Class="HR_Applicant_System.Views.FinalReviewView"
-        Title="Staff Approved Queue"
-        Width="750"
-        Height="540"
-        WindowStartupLocation="CenterOwner"
-        Background="#1e1e1e">
+        Title="Final Review - HR Department">
 
-    <Border Background="#252525" CornerRadius="10" Padding="30" Margin="25">
-        <StackPanel Spacing="15">
-            <TextBlock Text="Staff Approved Queue" FontSize="26" FontWeight="Bold" Foreground="White"/>
-            <TextBlock Text="Applicants in this section are waiting for Admin/Manager final decision." 
-                       Foreground="#e0e0e0" TextWrapping="Wrap"/>
-            
-            <!-- ListBox defined with Name for C# access -->
-            <ListBox Name="applicantList" Height="220" DoubleTapped="ApplicantList_DoubleTapped" />
-            
-            <TextBlock Text="Final Remarks" Foreground="White" />
-            
-            <!-- TextBox defined with Name for C# access -->
-            <TextBox Name="txtFinalRemarks" 
-                     PlaceholderText="Enter final remarks here, especially if rejecting applicant..." 
-                     Height="80" 
-                     AcceptsReturn="True" 
-                     TextWrapping="Wrap"/>
+    <Grid RowDefinitions="*, Auto, Auto" Margin="20">
+        
+        <ListBox Name="applicantList" Grid.Row="0">
+            <ListBox.ItemTemplate>
+                <DataTemplate x:DataType="models:Application">
+                    <Border BorderBrush="#333333" BorderThickness="1" CornerRadius="4" Padding="10" Margin="0,2">
+                        <Grid ColumnDefinitions="*, Auto">
+                            <StackPanel Grid.Column="0" Spacing="5">
+                                <TextBlock Text="{Binding Name}" FontWeight="Bold" FontSize="14"/>
+                                <TextBlock Text="{Binding Position}" Foreground="LightGray" FontSize="12"/>
+                            </StackPanel>
+                            <TextBlock Grid.Column="1" Text="{Binding Status}" 
+                                       Foreground="#F59E0B" VerticalAlignment="Center" FontWeight="Bold"/>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
 
-            <StackPanel Orientation="Horizontal" Spacing="15">
-                <Button Content="Final Approve / Hire" 
-                        Click="Approve_Click" 
-                        Height="42" Width="180" 
-                        Background="#10B981" Foreground="White"/>
-                
-                <Button Content="Overrule / Reject" 
-                        Click="Reject_Click" 
-                        Height="42" Width="180" 
-                        Background="#EF4444" Foreground="White"/>
-            </StackPanel>
+        <StackPanel Grid.Row="1" Margin="0,15,0,0" Spacing="10">
+            <TextBlock Text="Admin Final Hiring Decision Remarks:" Foreground="LightGray"/>
+            <TextBox Name="txtFinalRemarks" Height="70" AcceptsReturn="True"
+                     PlaceholderText="Enter final package offers, decision remarks or contract details here..."/>
         </StackPanel>
-    </Border>
+
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,15,0,0" Spacing="12">
+            <Button Name="btnReject" Content="Reject Application" Background="#EF4444" Foreground="White" Padding="15,8" FontWeight="Bold"/>
+            <Button Name="btnApprove" Content="Approve &amp; Issue Offer" Background="#10B981" Foreground="White" Padding="15,8" FontWeight="Bold"/>
+        </StackPanel>
+        
+    </Grid>
 </Window>

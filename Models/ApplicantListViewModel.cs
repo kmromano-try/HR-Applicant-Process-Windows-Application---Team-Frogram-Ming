@@ -185,7 +185,12 @@ namespace HR_Applicant_System.ViewModels
                 var btnConfirm = new Button { Content = "Confirm & Send to Admin", Background = Brush.Parse("#10B981"), Foreground = Brushes.White, Padding = new Thickness(15, 7), FontWeight = FontWeight.Bold };
                 btnConfirm.Click += async (s, ev) =>
                 {
-                    if (string.IsNullOrWhiteSpace(txtDate.Text) || string.IsNullOrWhiteSpace(txtTime.Text))
+                    string interviewer = txtInterviewer.Text ?? string.Empty;
+                    string date = txtDate.Text ?? string.Empty;
+                    string time = txtTime.Text ?? string.Empty;
+                    string remarks = txtRemarks.Text ?? string.Empty;
+
+                    if (string.IsNullOrWhiteSpace(date) || string.IsNullOrWhiteSpace(time) || string.IsNullOrWhiteSpace(interviewer))
                     {
                         return;
                     }
@@ -193,6 +198,7 @@ namespace HR_Applicant_System.ViewModels
                     await Task.Run(() =>
                     {
                         var repo = new ApplicationRepository();
+                        repo.SaveInterviewSchedule(applicantId, interviewer, date, time, remarks);
                         repo.UpdateApplicationStatus(applicantId, "For Final Review");
                     });
 
@@ -227,10 +233,13 @@ namespace HR_Applicant_System.ViewModels
             try
             {
                 var repo = new ApplicationRepository();
-                var records = await Task.Run(() => repo.GetAllActiveApplications() ?? new List<ApplicantItem>());
-                var staffReviewOnly = records.FindAll(a => a.Status != "For Final Review" && a.Status != "Rejected");
-
-                Dispatcher.UIThread.Post(() => UpdateApplicantsList(staffReviewOnly));
+                var records = await Task.Run(() => repo.GetAllActiveApplications());
+                
+                if (records != null)
+                {
+                    var staffReviewOnly = records.FindAll(a => a.Status != "For Final Review");
+                    Dispatcher.UIThread.Post(() => UpdateApplicantsList(staffReviewOnly));
+                }
             }
             catch (Exception ex)
             {
@@ -250,7 +259,7 @@ namespace HR_Applicant_System.ViewModels
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Collection Update Error: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine(ex.Message);
             }
         }
 
@@ -268,18 +277,10 @@ namespace HR_Applicant_System.ViewModels
                 dialog.Show();
 
                 Applicants.Clear();
-                Applicants.Add(new ApplicantItem { Name = "Alice Juan (Mock Data)", Position = "Junior Python Developer", Status = "Pending Review" });
-                Applicants.Add(new ApplicantItem { Name = "Mark Carandang (Mock Data)", Position = "Database Administrator", Status = "Interviewing" });
-                Applicants.Add(new ApplicantItem { Name = "Sophia Mendoza (Mock Data)", Position = "QA Automation Engineer", Status = "Technical Test" });
+                Applicants.Add(new ApplicantItem { Name = "Alice Juan", Position = "Junior Python Developer", Status = "Pending Review" });
+                Applicants.Add(new ApplicantItem { Name = "Mark Carandang", Position = "Database Administrator", Status = "Interviewing" });
+                Applicants.Add(new ApplicantItem { Name = "Sophia Mendoza", Position = "QA Automation Engineer", Status = "Technical Test" });
             });
         }
-    }
-
-    public class ApplicantItem
-    {
-        public int ApplicationID { get; set; }
-        public string Name { get; set; } = string.Empty;
-        public string Position { get; set; } = string.Empty;
-        public string Status { get; set; } = string.Empty;
     }
 }

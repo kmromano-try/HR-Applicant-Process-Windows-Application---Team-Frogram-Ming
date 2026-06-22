@@ -1,66 +1,103 @@
-using HR_Applicant_System;
 using System;
 using System.Collections.Generic;
 using MySql.Data.MySqlClient;
-using HR_Applicant_System.ViewModels;
 
 namespace HR_Applicant_System.Models
 {
+    public class ApplicantItem
+    {
+        public int ApplicationID { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string Position { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty;
+    }
+
     public class ApplicationRepository
     {
         public List<ApplicantItem> GetAllActiveApplications()
         {
             var list = new List<ApplicantItem>();
-
             using (var conn = DatabaseHelper.GetConnection())
             {
                 conn.Open();
-                
-                // UPDATED: Added a.ApplicationID to pull the unique key for selection tracking
-                string query = $@"SELECT a.ApplicationID, ap.FullName, j.JobTitle, a.Status 
-                                FROM {DatabaseHelper.ApplicationTable} a
-                                INNER JOIN {DatabaseHelper.ApplicantTable} ap ON a.ApplicantID = ap.ApplicantID
-                                INNER JOIN {DatabaseHelper.JobTable} j ON a.VacancyID = j.VacancyID"; 
-
+                string query = "SELECT application_id, name, position, status FROM applications WHERE status != 'Rejected' AND status != 'For Final Review'";
                 using (var cmd = new MySqlCommand(query, conn))
-                using (var reader = cmd.ExecuteReader())
                 {
-                    while (reader.Read())
+                    using (var reader = cmd.ExecuteReader())
                     {
-                        list.Add(new ApplicantItem
+                        while (reader.Read())
                         {
-                            // UPDATED: Mapping the ApplicationID database column to the item property
-                            ApplicationID = reader.IsDBNull(reader.GetOrdinal("ApplicationID")) ? 0 : reader.GetInt32("ApplicationID"),
-                            Name = reader.IsDBNull(reader.GetOrdinal("FullName")) ? string.Empty : reader.GetString("FullName"),
-                            Position = reader.IsDBNull(reader.GetOrdinal("JobTitle")) ? string.Empty : reader.GetString("JobTitle"),
-                            Status = reader.IsDBNull(reader.GetOrdinal("Status")) ? string.Empty : reader.GetString("Status")
-                        });
+                            list.Add(new ApplicantItem
+                            {
+                                ApplicationID = Convert.ToInt32(reader["application_id"]),
+                                Name = reader["name"]?.ToString() ?? string.Empty,
+                                Position = reader["position"]?.ToString() ?? string.Empty,
+                                Status = reader["status"]?.ToString() ?? string.Empty
+                            });
+                        }
                     }
                 }
             }
             return list;
         }
 
-        public bool UpdateApplicationStatus(int applicationId, string newStatus)
+        public List<ApplicantItem> GetFinalReviewApplications()
         {
-            try
+            var list = new List<ApplicantItem>();
+            using (var conn = DatabaseHelper.GetConnection())
             {
-                using (var conn = DatabaseHelper.GetConnection())
+                conn.Open();
+                string query = "SELECT application_id, name, position, status FROM applications WHERE status = 'For Final Review'";
+                using (var cmd = new MySqlCommand(query, conn))
                 {
-                    conn.Open();
-                    string query = $"UPDATE {DatabaseHelper.ApplicationTable} SET Status = @status WHERE ApplicationID = @id";
-                    using (var cmd = new MySqlCommand(query, conn))
+                    using (var reader = cmd.ExecuteReader())
                     {
-                        cmd.Parameters.AddWithValue("@status", newStatus);
-                        cmd.Parameters.AddWithValue("@id", applicationId);
-                        return cmd.ExecuteNonQuery() > 0;
+                        while (reader.Read())
+                        {
+                            list.Add(new ApplicantItem
+                            {
+                                ApplicationID = Convert.ToInt32(reader["application_id"]),
+                                Name = reader["name"]?.ToString() ?? string.Empty,
+                                Position = reader["position"]?.ToString() ?? string.Empty,
+                                Status = reader["status"]?.ToString() ?? string.Empty
+                            });
+                        }
                     }
                 }
             }
-            catch (Exception ex)
+            return list;
+        }
+
+        public bool UpdateApplicationStatus(int applicantId, string status)
+        {
+            using (var conn = DatabaseHelper.GetConnection())
             {
-                System.Diagnostics.Debug.WriteLine($"Error updating application status: {ex.Message}");
-                return false;
+                conn.Open();
+                string query = "UPDATE applications SET status = @status WHERE application_id = @applicantId";
+                using (var cmd = new MySqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@status", status);
+                    cmd.Parameters.AddWithValue("@applicantId", applicantId);
+                    return cmd.ExecuteNonQuery() > 0;
+                }
+            }
+        }
+
+        public bool SaveInterviewSchedule(int applicantId, string interviewer, string date, string time, string remarks)
+        {
+            using (var conn = DatabaseHelper.GetConnection())
+            {
+                conn.Open();
+                string query = "INSERT INTO interviews (applicant_id, interviewer, interview_date, interview_time, hr_remarks) VALUES (@applicantId, @interviewer, @date, @time, @remarks)";
+                using (var cmd = new MySqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@applicantId", applicantId);
+                    cmd.Parameters.AddWithValue("@interviewer", interviewer);
+                    cmd.Parameters.AddWithValue("@date", date);
+                    cmd.Parameters.AddWithValue("@time", time);
+                    cmd.Parameters.AddWithValue("@remarks", remarks);
+                    return cmd.ExecuteNonQuery() > 0;
+                }
             }
         }
     }
