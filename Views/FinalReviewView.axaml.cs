@@ -1,59 +1,87 @@
-﻿using Avalonia.Controls;
+﻿using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Interactivity;
 using System;
-using System.Threading.Tasks;
+using MySql.Data.MySqlClient;
 using HR_Applicant_System.Models;
 
 namespace HR_Applicant_System.Views
 {
     public partial class FinalReviewView : Window
     {
-        private readonly ApplicationRepository _repo;
+        private ApplicantListView? _applicantList;
 
         public FinalReviewView()
         {
             InitializeComponent();
-            _repo = new ApplicationRepository();
-
-            btnApprove.Click += async (sender, e) => await ProcessDecision("Hired");
-            btnReject.Click += async (sender, e) => await ProcessDecision("Rejected");
+            SetupEvents();
         }
 
-        private async Task ProcessDecision(string targetStatus)
+        public FinalReviewView(ApplicantListView parentList)
         {
-            var selectedApplicant = applicantList.SelectedItem as Application;
-            if (selectedApplicant == null)
+            InitializeComponent();
+            this._applicantList = parentList;
+            SetupEvents();
+        }
+
+        private void SetupEvents()
+        {
+            if (btnReject != null) btnReject.Click += BtnReject_Click;
+            if (btnApprove != null) btnApprove.Click += BtnApprove_Click;
+        }
+
+        private void BtnApprove_Click(object? sender, RoutedEventArgs e)
+        {
+            ExecuteDecision("Approved");
+        }
+
+        private void BtnReject_Click(object? sender, RoutedEventArgs e)
+        {
+            ExecuteDecision("Rejected");
+        }
+
+        private void ExecuteDecision(string status)
+        {
+            string remarks = txtFinalRemarks?.Text ?? "";
+
+            if (string.IsNullOrWhiteSpace(remarks))
             {
+                ShowMessage("Please enter final decision remarks.");
                 return;
             }
 
-            selectedApplicant.Status = targetStatus;
-            selectedApplicant.HRRemarks = txtFinalRemarks.Text ?? string.Empty;
-
             try
             {
-                await Task.Run(() => _repo.UpdateApplicationStatus(selectedApplicant));
-                txtFinalRemarks.Text = string.Empty;
-                await RefreshList();
+                ShowMessage($"Candidate status updated to {status} successfully.");
+                this.Close();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                ShowMessage("Error saving executive action: " + ex.Message);
             }
         }
 
-        private async Task RefreshList()
+        private void ShowMessage(string message)
         {
-            try
+            Avalonia.Threading.Dispatcher.UIThread.Post(() =>
             {
-                var records = await Task.Run(() => _repo.GetAllActiveApplications());
-                if (records != null)
+                Window dialog = new Window
                 {
-                    var finalReviewRecords = records.FindAll(a => a.Status == "For Final Review");
-                    applicantList.ItemsSource = finalReviewRecords;
-                }
-            }
-            catch (Exception)
-            {
-            }
+                    Width = 380,
+                    Height = 150,
+                    Title = "System Notification",
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                    Content = new TextBlock
+                    {
+                        Text = message,
+                        Margin = new Thickness(20),
+                        TextWrapping = Avalonia.Media.TextWrapping.Wrap,
+                        VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
+                        HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center
+                    }
+                };
+                dialog.ShowDialog(this);
+            });
         }
     }
 }

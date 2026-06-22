@@ -1,5 +1,33 @@
 <Window xmlns="https://github.com/avaloniaui"
-        Width="550"
-        Height="520"
-        Title="Create Job Vacancy">
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="HR_Applicant_System.Views.CreateJobView"
+        Title="Create Job Vacancy"
+        Width="550" Height="520"
+        WindowStartupLocation="CenterScreen"
+        Background="#1e1e1e">
+
+    <Border Background="#252525" CornerRadius="10" Padding="30" Width="450" 
+            HorizontalAlignment="Center" VerticalAlignment="Center">
+        <StackPanel Spacing="12">
+            <TextBlock Text="Create Job Vacancy" FontSize="24" FontWeight="Bold" Foreground="White"/>
+            <TextBlock Text="Admin/Manager can publish active job openings for applicants." 
+                       TextWrapping="Wrap" Foreground="#e0e0e0"/>
+            
+            <TextBlock Text="Job Title" Foreground="White" Margin="0,5,0,0"/>
+            <TextBox Name="txtJobTitle" PlaceholderText="Enter job title"/>
+
+            <TextBlock Text="Department" Foreground="White" Margin="0,5,0,0"/>
+            <TextBox Name="txtDepartment" PlaceholderText="Enter department"/>
+
+            <TextBlock Text="Job Description" Foreground="White" Margin="0,5,0,0"/>
+            <TextBox Name="txtDescription" PlaceholderText="Enter job description" Height="80" AcceptsReturn="True" TextWrapping="Wrap"/>
+
+            <TextBlock Text="Minimum Qualifications" Foreground="White" Margin="0,5,0,0"/>
+            <TextBox Name="txtQualifications" PlaceholderText="Enter minimum qualifications" Height="80" AcceptsReturn="True" TextWrapping="Wrap"/>
+
+            <Button Name="btnPublish" Content="Publish Job Opening" Height="42" 
+                    HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                    Margin="0,15,0,0" Click="PublishJob_Click"/>
+        </StackPanel>
+    </Border>
 </Window>
