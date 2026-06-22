@@ -577,16 +577,13 @@ private void LoadMyApplications()
 
     _closedJobsList.Items.Clear();
 
-    if (jobs != null)
+    foreach (var job in jobs)
     {
-        foreach (var job in jobs)
+        // same lang din ung problem nung sa load active jobs, hanapin mo baka iba ung status sa database hindi "Closed"
+        if (job.Status.Equals("Closed", StringComparison.OrdinalIgnoreCase))
         {
-            // Safeguard against null values, trim trailing spaces, and check for "Closed"
-            if (!string.IsNullOrEmpty(job.Status) && 
-                job.Status.Trim().Equals("Closed", StringComparison.OrdinalIgnoreCase))
-            {
-                _closedJobsList.Items.Add($"Job #{job.VacancyID}: {job.JobTitle} ({job.Department})");
-            }
+            _closedJobsList.Items.Add(
+                $"Job #{job.VacancyID}: {job.JobTitle} ({job.Department})");
         }
     }
 }

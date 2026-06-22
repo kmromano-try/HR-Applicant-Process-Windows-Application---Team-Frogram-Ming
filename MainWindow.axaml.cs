@@ -28,11 +28,30 @@ public partial class MainWindow : Window
 
     public void Staff_Click(object? sender, RoutedEventArgs e)
     {
-        Console.WriteLine("Staff portal not yet connected.");
+        try
+        {
+            var staffView = new HR_Applicant_System.Views.StaffView();
+            staffView.Show();
+            this.Close();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error opening Staff Portal: {ex.Message}");
+        }
     }
 
     public void Admin_Click(object? sender, RoutedEventArgs e)
     {
-        Console.WriteLine("Admin portal not yet connected.");
+        try
+        {
+            // If it requires a login first, change AdminView to AdminLoginView
+            var adminView = new HR_Applicant_System.Views.AdminView();
+            adminView.Show();
+            this.Close();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error opening Admin Portal: {ex.Message}");
+        }
     }
 }

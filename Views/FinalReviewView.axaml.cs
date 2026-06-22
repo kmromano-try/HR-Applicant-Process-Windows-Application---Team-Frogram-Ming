@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿using System;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
@@ -9,7 +9,7 @@ using HR_Applicant_System.Models;
 
 namespace HR_Applicant_System.Views
 {
-    public class FinalReviewView : Window
+    public partial class FinalReviewView : Window
     {
         private ListBox applicantList;
         private TextBox txtFinalRemarks;

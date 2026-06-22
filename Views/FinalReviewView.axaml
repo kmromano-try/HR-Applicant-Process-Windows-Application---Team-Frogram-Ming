@@ -1,5 +1,10 @@
 <Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="HR_Applicant_System.Views.FinalReviewView"
         Width="750"
         Height="540"
         Title="Staff Approved Queue">
+    <Grid>
+        <TextBlock Text="Placeholder" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+    </Grid>
 </Window>
