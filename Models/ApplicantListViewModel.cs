@@ -143,13 +143,70 @@ namespace HR_Applicant_System.ViewModels
         {
             if (SelectedApplicant == null) return;
 
-            var repo = new ApplicationRepository();
-            bool success = await Task.Run(() => repo.UpdateApplicationStatus(SelectedApplicant.ApplicationID, "For Final Review"));
+            int applicantId = SelectedApplicant.ApplicationID;
+            string applicantName = SelectedApplicant.Name;
 
-            if (success)
+            Dispatcher.UIThread.Post(() =>
             {
-                await ExecuteRefreshDashboard();
-            }
+                var interviewWindow = new Window
+                {
+                    Title = $"Schedule Interview - {applicantName}",
+                    Width = 400,
+                    Height = 440,
+                    WindowStartupLocation = WindowStartupLocation.CenterScreen,
+                    Background = Brush.Parse("#1e1e1e")
+                };
+
+                var mainStack = new StackPanel { Margin = new Thickness(20), Spacing = 10 };
+
+                mainStack.Children.Add(new TextBlock { Text = "File Interview Information", FontSize = 18, FontWeight = FontWeight.Bold, Foreground = Brushes.White, Margin = new Thickness(0, 0, 0, 10) });
+
+                mainStack.Children.Add(new TextBlock { Text = "Interviewer Name:", Foreground = Brushes.LightGray });
+                var txtInterviewer = new TextBox { PlaceholderText = "e.g., HR Manager / Staff Name", Height = 35 };
+                mainStack.Children.Add(txtInterviewer);
+
+                mainStack.Children.Add(new TextBlock { Text = "Interview Date (YYYY-MM-DD):", Foreground = Brushes.LightGray });
+                var txtDate = new TextBox { PlaceholderText = "e.g., 2026-06-25", Height = 35 };
+                mainStack.Children.Add(txtDate);
+
+                mainStack.Children.Add(new TextBlock { Text = "Interview Time (e.g., 10:00 AM):", Foreground = Brushes.LightGray });
+                var txtTime = new TextBox { PlaceholderText = "e.g., 2:30 PM", Height = 35 };
+                mainStack.Children.Add(txtTime);
+
+                mainStack.Children.Add(new TextBlock { Text = "Initial Staff Evaluation Remarks:", Foreground = Brushes.LightGray });
+                var txtRemarks = new TextBox { PlaceholderText = "Enter evaluation notes or initial requirements status...", Height = 70, AcceptsReturn = true };
+                mainStack.Children.Add(txtRemarks);
+
+                var btnStack = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 10, HorizontalAlignment = HorizontalAlignment.Right, Margin = new Thickness(0, 15, 0, 0) };
+                
+                var btnCancel = new Button { Content = "Cancel", Padding = new Thickness(15, 7) };
+                btnCancel.Click += (s, ev) => interviewWindow.Close();
+
+                var btnConfirm = new Button { Content = "Confirm & Send to Admin", Background = Brush.Parse("#10B981"), Foreground = Brushes.White, Padding = new Thickness(15, 7), FontWeight = FontWeight.Bold };
+                btnConfirm.Click += async (s, ev) =>
+                {
+                    if (string.IsNullOrWhiteSpace(txtDate.Text) || string.IsNullOrWhiteSpace(txtTime.Text))
+                    {
+                        return;
+                    }
+
+                    await Task.Run(() =>
+                    {
+                        var repo = new ApplicationRepository();
+                        repo.UpdateApplicationStatus(applicantId, "For Final Review");
+                    });
+
+                    interviewWindow.Close();
+                    await ExecuteRefreshDashboard();
+                };
+
+                btnStack.Children.Add(btnCancel);
+                btnStack.Children.Add(btnConfirm);
+                mainStack.Children.Add(btnStack);
+
+                interviewWindow.Content = mainStack;
+                interviewWindow.Show();
+            });
         }
 
         private async Task ExecuteFailApplication()
@@ -171,7 +228,9 @@ namespace HR_Applicant_System.ViewModels
             {
                 var repo = new ApplicationRepository();
                 var records = await Task.Run(() => repo.GetAllActiveApplications() ?? new List<ApplicantItem>());
-                Dispatcher.UIThread.Post(() => UpdateApplicantsList(records));
+                var staffReviewOnly = records.FindAll(a => a.Status != "For Final Review" && a.Status != "Rejected");
+
+                Dispatcher.UIThread.Post(() => UpdateApplicantsList(staffReviewOnly));
             }
             catch (Exception ex)
             {

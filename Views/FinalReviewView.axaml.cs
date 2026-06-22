@@ -9,11 +9,9 @@ using HR_Applicant_System.Models;
 
 namespace HR_Applicant_System.Views
 {
-    public class FinalReviewView : Window
+    public partial class FinalReviewView : Window
     {
-        private ListBox applicantList;
-        private TextBox txtFinalRemarks;
-
+        
         public FinalReviewView()
         {
             Width = 750;
