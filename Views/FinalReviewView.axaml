@@ -1,8 +1,5 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="500"
         x:Class="HR_Applicant_System.Views.FinalReviewView"
         x:CompileBindings="False"
         Title="Final Review"
@@ -14,19 +11,15 @@
         <Border Grid.Column="0" Background="#1e1e1e" CornerRadius="8" Margin="0,0,10,0" Padding="20">
             <StackPanel Spacing="15">
                 <TextBlock Text="Applicant Summary" FontSize="18" FontWeight="Bold" Foreground="White"/>
-                
                 <Separator Background="#333333" Height="1"/>
-
                 <StackPanel Spacing="5">
                     <TextBlock Text="Candidate Name" FontSize="12" Foreground="#888888"/>
                     <TextBlock Text="{Binding Name}" FontSize="16" Foreground="White" FontWeight="SemiBold"/>
                 </StackPanel>
-
                 <StackPanel Spacing="5">
                     <TextBlock Text="Applied Position" FontSize="12" Foreground="#888888"/>
                     <TextBlock Text="{Binding Position}" FontSize="14" Foreground="#e0e0e0"/>
                 </StackPanel>
-
                 <StackPanel Spacing="5">
                     <TextBlock Text="Status" FontSize="12" Foreground="#888888"/>
                     <TextBlock Text="Pending Final Decision" FontSize="14" Foreground="#FFB300" FontWeight="Medium"/>
@@ -37,39 +30,14 @@
         <Border Grid.Column="1" Background="#1e1e1e" CornerRadius="8" Margin="10,0,0,0" Padding="20">
             <StackPanel Spacing="15">
                 <TextBlock Text="Executive Action" FontSize="18" FontWeight="Bold" Foreground="White"/>
-
                 <Separator Background="#333333" Height="1"/>
-
                 <StackPanel Spacing="5">
                     <TextBlock Text="Final Decision Remarks / Feedback" FontSize="12" Foreground="#888888"/>
-                    <TextBox Name="txtFinalRemarks" 
-                             PlaceholderText="Type executive decision justifications here..." 
-                             Height="120" 
-                             TextWrapping="Wrap" 
-                             AcceptsReturn="True"/>
+                    <TextBox Name="txtFinalRemarks" Height="120" TextWrapping="Wrap" AcceptsReturn="True"/>
                 </StackPanel>
-
                 <Grid ColumnDefinitions="*, *" Margin="0,10,0,0">
-                    <Button Grid.Column="0" 
-                            Name="btnReject" 
-                            Content="Reject Candidate" 
-                            Background="#D32F2F" 
-                            Foreground="White" 
-                            Height="40"
-                            HorizontalAlignment="Stretch" 
-                            HorizontalContentAlignment="Center"
-                            VerticalContentAlignment="Center"
-                            Margin="0,0,5,0"/>
-                    <Button Grid.Column="1" 
-                            Name="btnApprove" 
-                            Content="Approve &amp; Hire" 
-                            Background="#388E3C" 
-                            Foreground="White" 
-                            Height="40"
-                            HorizontalAlignment="Stretch" 
-                            HorizontalContentAlignment="Center"
-                            VerticalContentAlignment="Center"
-                            Margin="5,0,0,0"/>
+                    <Button Grid.Column="0" Name="btnReject" Content="Reject Candidate" Background="#D32F2F" Foreground="White" Height="40" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="0,0,5,0"/>
+                    <Button Grid.Column="1" Name="btnApprove" Content="Approve &amp; Hire" Background="#388E3C" Foreground="White" Height="40" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="5,0,0,0"/>
                 </Grid>
             </StackPanel>
         </Border>
