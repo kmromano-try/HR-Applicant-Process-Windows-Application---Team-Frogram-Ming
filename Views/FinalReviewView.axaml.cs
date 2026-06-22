@@ -57,7 +57,21 @@ namespace HR_Applicant_System.Views
         {
             Avalonia.Threading.Dispatcher.UIThread.Post(() =>
             {
-                Window dialog = new Window { Width = 380, Height = 150, Title = "Notification", WindowStartupLocation = WindowStartupLocation.CenterOwner, Content = new TextBlock { Text = message, Margin = new Thickness(20), TextWrapping = Avalonia.Media.TextWrapping.Wrap, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center } };
+                Window dialog = new Window 
+                { 
+                    Width = 380, 
+                    Height = 150, 
+                    Title = "Notification", 
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner, 
+                    Content = new TextBlock 
+                    { 
+                        Text = message, 
+                        Margin = new Thickness(20), 
+                        TextWrapping = Avalonia.Media.TextWrapping.Wrap, 
+                        VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, 
+                        HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center 
+                    } 
+                };
                 dialog.ShowDialog(this);
             });
         }
