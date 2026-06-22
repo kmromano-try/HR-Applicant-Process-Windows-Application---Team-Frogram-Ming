@@ -373,28 +373,25 @@ Content = mainContentGrid;
         }
 
         private void LoadJobsIntoListBox()
-                    
+{
+    var jobRepo = new JobRepository();
+    var availableJobs = jobRepo.GetAllJobs();
+
+    _activeJobsList.Items.Clear();
+    cbJobs.Items.Clear();
+
+    foreach (var job in availableJobs)
+    {
+        // Changed from "Open" to "Active" to match your actual database schema strings
+        if (job.Status.Equals("Active", StringComparison.OrdinalIgnoreCase))
         {
-            var jobRepo = new JobRepository();
-            var availableJobs = jobRepo.GetAllJobs();
-
-            Avalonia.Threading.Dispatcher.UIThread.Post(() =>
-            {
-                 _activeJobsList.Items.Clear();
-        cbJobs.Items.Clear();
-
-        foreach (var job in availableJobs)
-        {
-            if (job.Status.Equals("Open", StringComparison.OrdinalIgnoreCase))
-            {
-                _activeJobsList.Items.Add(
-                    $"Job #{job.VacancyID}: {job.JobTitle} ({job.Department})");
-
-                cbJobs.Items.Add(job.JobTitle);
-            }
+            _activeJobsList.Items.Add($"Job #{job.VacancyID}: {job.JobTitle} ({job.Department})");
+            cbJobs.Items.Add(job.JobTitle);
         }
-    });
+    }
 }
+
+
         public void Submit_Click(object? sender, RoutedEventArgs e)
         {
             if (_loggedInApplicantId == 0)
@@ -580,12 +577,16 @@ private void LoadMyApplications()
 
     _closedJobsList.Items.Clear();
 
-    foreach (var job in jobs)
+    if (jobs != null)
     {
-        if (job.Status.Equals("Closed", StringComparison.OrdinalIgnoreCase))
+        foreach (var job in jobs)
         {
-            _closedJobsList.Items.Add(
-                $"Job #{job.VacancyID}: {job.JobTitle} ({job.Department})");
+            // Safeguard against null values, trim trailing spaces, and check for "Closed"
+            if (!string.IsNullOrEmpty(job.Status) && 
+                job.Status.Trim().Equals("Closed", StringComparison.OrdinalIgnoreCase))
+            {
+                _closedJobsList.Items.Add($"Job #{job.VacancyID}: {job.JobTitle} ({job.Department})");
+            }
         }
     }
 }
