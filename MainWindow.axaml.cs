@@ -30,8 +30,9 @@ public partial class MainWindow : Window
     {
         try
         {
-            var staffView = new HR_Applicant_System.Views.StaffView();
-            staffView.Show();
+            // Rerouted straight to the Login screen instead of the dashboard portal
+            var staffLoginView = new StaffLoginView();
+            staffLoginView.Show();
             this.Close();
         }
         catch (Exception ex)
@@ -44,9 +45,9 @@ public partial class MainWindow : Window
     {
         try
         {
-            // If it requires a login first, change AdminView to AdminLoginView
-            var adminView = new HR_Applicant_System.Views.AdminView();
-            adminView.Show();
+            // Rerouted straight to the Login screen instead of the dashboard portal
+            var adminLoginView = new AdminLoginView();
+            adminLoginView.Show();
             this.Close();
         }
         catch (Exception ex)
