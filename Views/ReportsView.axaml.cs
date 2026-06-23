@@ -1,4 +1,5 @@
-﻿using System;
+﻿﻿using System;
+using System.Linq; 
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
@@ -23,13 +24,14 @@ namespace HR_Applicant_System.Views
             {
                 Text = "Recruitment Reports",
                 FontSize = 26,
-                FontWeight = FontWeight.Bold
+                FontWeight = FontWeight.Bold,
+                Foreground = Brushes.White
             };
 
             TextBlock subtitle = new TextBlock
             {
                 Text = "Admin/Manager can view recruitment summaries and generate basic reports.",
-                Foreground = Brushes.Gray,
+                Foreground = new SolidColorBrush(Color.Parse("#e0e0e0")),
                 TextWrapping = TextWrapping.Wrap
             };
 
@@ -57,34 +59,23 @@ namespace HR_Applicant_System.Views
             StackPanel contentPanel = new StackPanel
             {
                 Spacing = 15,
-                Children =
-                {
-                    title,
-                    subtitle,
-                    reportList,
-                    btnGenerate
-                }
+                Children = { title, subtitle, reportList, btnGenerate }
             };
 
             Border card = new Border
             {
-                Background = Brushes.White,
+                Background = new SolidColorBrush(Color.Parse("#252525")),
                 CornerRadius = new CornerRadius(10),
                 Padding = new Thickness(30),
                 Margin = new Thickness(25),
                 Child = contentPanel
             };
 
-            Grid mainGrid = new Grid
+            Content = new Grid
             {
-                Background = new SolidColorBrush(Color.Parse("#F3F4F6")),
-                Children =
-                {
-                    card
-                }
+                Background = new SolidColorBrush(Color.Parse("#1e1e1e")),
+                Children = { card }
             };
-
-            Content = mainGrid;
         }
 
         private void GenerateReport_Click(object? sender, RoutedEventArgs e)
@@ -97,113 +88,72 @@ namespace HR_Applicant_System.Views
 
             string selectedReport = reportList.SelectedItem.ToString() ?? "";
 
-            if (selectedReport == "Active Job Vacancies Report")
+            switch (selectedReport)
             {
-                ShowActiveJobVacanciesReport();
-            }
-            else
-            {
-                ShowMessage("This report option is listed for the full system. Please select Active Job Vacancies Report for the working report demo.");
+                case "Applicant List Report":
+                    ShowGenericReport("Applicant List Report", 
+                        $"SELECT ApplicantID, FullName, Email FROM {DatabaseHelper.ApplicantTable}",
+                        "ID: {0} | Name: {1} | Email: {2}", "ApplicantID", "FullName", "Email");
+                    break;
+                case "Active Job Vacancies Report":
+                    ShowActiveJobVacanciesReport();
+                    break;
+                case "Accepted Applicants Report":
+                    ShowGenericReport("Accepted Applicants Report",
+                        $"SELECT a.ApplicationID, p.FullName FROM {DatabaseHelper.ApplicationTable} a JOIN {DatabaseHelper.ApplicantTable} p ON a.ApplicantID = p.ApplicantID WHERE a.Status = 'Accepted'",
+                        "App ID: {0} | Applicant: {1}", "ApplicationID", "FullName");
+                    break;
+                case "Rejected Applicants Report":
+                    ShowGenericReport("Rejected Applicants Report",
+                        $"SELECT a.ApplicationID, p.FullName FROM {DatabaseHelper.ApplicationTable} a JOIN {DatabaseHelper.ApplicantTable} p ON a.ApplicantID = p.ApplicantID WHERE a.Status = 'Rejected'",
+                        "App ID: {0} | Applicant: {1}", "ApplicationID", "FullName");
+                    break;
             }
         }
 
         private void ShowActiveJobVacanciesReport()
         {
-            Window reportWindow = new Window
-            {
-                Width = 800,
-                Height = 500,
-                Title = "Active Job Vacancies Report"
-            };
+            ShowGenericReport("Active Job Vacancies Report",
+                $"SELECT VacancyID, JobTitle, Department, Status FROM {DatabaseHelper.JobTable} WHERE Status = 'Active'",
+                "Job #{0} | {1} | {2} | Status: {3}", "VacancyID", "JobTitle", "Department", "Status");
+        }
 
-            ListBox jobList = new ListBox
-            {
-                Height = 340
-            };
+        private void ShowGenericReport(string title, string query, string format, params string[] columns)
+        {
+            Window reportWindow = new Window { Width = 700, Height = 450, Title = title };
+            ListBox list = new ListBox { Margin = new Thickness(20) };
 
             try
             {
-                using (MySqlConnection conn = DatabaseHelper.GetConnection())
+                using (var conn = DatabaseHelper.GetConnection())
                 {
                     conn.Open();
-
-                    string query = @"
-                        SELECT JobID, JobTitle, Department, VacancyStatus, CreatedAt
-                        FROM JobVacancies
-                        WHERE VacancyStatus = 'Active'
-                        ORDER BY CreatedAt DESC";
-
-                    using (MySqlCommand cmd = new MySqlCommand(query, conn))
-                    using (MySqlDataReader reader = cmd.ExecuteReader())
+                    using (var cmd = new MySqlCommand(query, conn))
+                    using (var reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
                         {
-                            string item =
-                                "Job #" + reader["JobID"] +
-                                " | " + reader["JobTitle"] +
-                                " | " + reader["Department"] +
-                                " | Status: " + reader["VacancyStatus"] +
-                                " | Posted: " + Convert.ToDateTime(reader["CreatedAt"]).ToString("MMM dd, yyyy");
-
-                            jobList.Items.Add(item);
+                            // Fix for CS8619: Explicit cast to (object) ensures type compatibility
+                            object[] values = columns.Select(col => (object)(reader[col]?.ToString() ?? "")).ToArray();
+                            list.Items.Add(string.Format(format, values));
                         }
                     }
                 }
-
-                if (jobList.Items.Count == 0)
-                {
-                    jobList.Items.Add("No active job vacancies found.");
-                }
+                if (list.Items.Count == 0) list.Items.Add("No records found.");
             }
-            catch (Exception ex)
-            {
-                jobList.Items.Add("Database error: " + ex.Message);
-            }
+            catch (Exception ex) { list.Items.Add("Database error: " + ex.Message); }
 
-            StackPanel panel = new StackPanel
-            {
-                Margin = new Thickness(25),
-                Spacing = 15,
-                Children =
-                {
-                    new TextBlock
-                    {
-                        Text = "Active Job Vacancies Report",
-                        FontSize = 24,
-                        FontWeight = FontWeight.Bold
-                    },
-                    new TextBlock
-                    {
-                        Text = "This report shows all job vacancies currently marked as Active.",
-                        Foreground = Brushes.Gray,
-                        TextWrapping = TextWrapping.Wrap
-                    },
-                    jobList
-                }
-            };
-
-            reportWindow.Content = panel;
+            reportWindow.Content = new StackPanel { Children = { new TextBlock { Text = title, FontSize = 20, Margin = new Thickness(20) }, list } };
             reportWindow.Show();
         }
 
         private async void ShowMessage(string message)
         {
-            Window dialog = new Window
+            Avalonia.Threading.Dispatcher.UIThread.Post(async () =>
             {
-                Width = 430,
-                Height = 160,
-                Title = "Message",
-                Content = new TextBlock
-                {
-                    Text = message,
-                    Margin = new Thickness(20),
-                    TextWrapping = TextWrapping.Wrap,
-                    VerticalAlignment = VerticalAlignment.Center,
-                    HorizontalAlignment = HorizontalAlignment.Center
-                }
-            };
-
-            await dialog.ShowDialog(this);
+                Window dialog = new Window { Width = 430, Height = 160, Title = "Message", Content = new TextBlock { Text = message, Margin = new Thickness(20), TextWrapping = TextWrapping.Wrap, VerticalAlignment = VerticalAlignment.Center, HorizontalAlignment = HorizontalAlignment.Center } };
+                await dialog.ShowDialog(this);
+            });
         }
     }
 }

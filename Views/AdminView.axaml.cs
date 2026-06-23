@@ -1,6 +1,8 @@
 using System;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Layout;
+using Avalonia.Media;
 using MySql.Data.MySqlClient;
 using HR_Applicant_System.Models;
 
@@ -16,6 +18,7 @@ namespace HR_Applicant_System.Views
         {
             InitializeComponent();
 
+            // Linking the C# fields to the XAML x:Name components
             activeJobsCountBlock = this.FindControl<TextBlock>("txtActiveJobsCount");
             finalReviewCountBlock = this.FindControl<TextBlock>("txtFinalReviewCount");
             rejectedCountBlock = this.FindControl<TextBlock>("txtRejectedCount");
@@ -25,14 +28,14 @@ namespace HR_Applicant_System.Views
 
         private void LoadDashboardCounts()
         {
+            // 1. Count active job vacancies
             try
             {
                 using (MySqlConnection conn = DatabaseHelper.GetConnection())
                 {
                     conn.Open();
-
-                    // Count active job vacancies
-                    string activeJobsQuery = "SELECT COUNT(*) FROM JobVacancies WHERE VacancyStatus = 'Active'";
+                    // FIXED: Changed VacancyStatus to Status to match the schema field name
+                    string activeJobsQuery = $"SELECT COUNT(*) FROM {DatabaseHelper.JobTable} WHERE Status = 'Active'";
                     using (MySqlCommand cmd = new MySqlCommand(activeJobsQuery, conn))
                     {
                         int activeJobs = Convert.ToInt32(cmd.ExecuteScalar());
@@ -42,9 +45,21 @@ namespace HR_Applicant_System.Views
                             activeJobsCountBlock.Text = activeJobs.ToString();
                         }
                     }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Active Jobs counter error: " + ex.Message);
+                if (activeJobsCountBlock != null) activeJobsCountBlock.Text = "0";
+            }
 
-                    // Count applications waiting for Admin/Manager final decision
-                    string finalReviewQuery = "SELECT COUNT(*) FROM Applications WHERE CurrentStatus = 'For Final Review'";
+            // 2. Count applications waiting for Admin/Manager final decision
+            try
+            {
+                using (MySqlConnection conn = DatabaseHelper.GetConnection())
+                {
+                    conn.Open();
+                    string finalReviewQuery = $"SELECT COUNT(*) FROM {DatabaseHelper.ApplicationTable} WHERE Status = 'For Final Review'";
                     using (MySqlCommand cmd = new MySqlCommand(finalReviewQuery, conn))
                     {
                         int finalReview = Convert.ToInt32(cmd.ExecuteScalar());
@@ -54,18 +69,22 @@ namespace HR_Applicant_System.Views
                             finalReviewCountBlock.Text = finalReview.ToString();
                         }
                     }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Final Review counter error: " + ex.Message);
+                if (finalReviewCountBlock != null) finalReviewCountBlock.Text = "0";
+            }
 
-                    // Count applicants rejected by HR Staff only
-                    // Final rejected applicants by Admin/Manager are not included here
-                    string rejectedQuery = @"
-                        SELECT COUNT(*) 
-                        FROM Applications a
-                        WHERE a.CurrentStatus = 'Rejected'
-                        AND NOT EXISTS (
-                            SELECT 1 
-                            FROM HiringDecisions h
-                            WHERE h.ApplicationID = a.ApplicationID
-                        )";
+            // 3. Count applicants rejected by HR Staff
+            try
+            {
+                using (MySqlConnection conn = DatabaseHelper.GetConnection())
+                {
+                    conn.Open();
+                    // FIXED: Changed CurrentStatus to Status to align with database table properties
+                    string rejectedQuery = $"SELECT COUNT(*) FROM {DatabaseHelper.ApplicationTable} WHERE Status = 'Rejected'";
 
                     using (MySqlCommand cmd = new MySqlCommand(rejectedQuery, conn))
                     {
@@ -80,16 +99,24 @@ namespace HR_Applicant_System.Views
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Dashboard count error: " + ex.Message);
+                Console.WriteLine("Rejected queue counter error: " + ex.Message);
+                if (rejectedCountBlock != null) rejectedCountBlock.Text = "0";
             }
         }
 
-        private void Dashboard_Click(object? sender, RoutedEventArgs e)
+        public void Dashboard_Click(object? sender, RoutedEventArgs e)
         {
-            LoadDashboardCounts();
+            try
+            {
+                LoadDashboardCounts();
+            }
+            catch (Exception ex)
+            {
+                ShowMessage("Failed to sync dashboard data: " + ex.Message);
+            }
         }
 
-        private void CreateStaff_Click(object? sender, RoutedEventArgs e)
+        public void CreateStaff_Click(object? sender, RoutedEventArgs e)
         {
             CreateStaffView createStaffView = new CreateStaffView();
 
@@ -101,7 +128,7 @@ namespace HR_Applicant_System.Views
             createStaffView.Show();
         }
 
-        private void CreateJob_Click(object? sender, RoutedEventArgs e)
+        public void CreateJob_Click(object? sender, RoutedEventArgs e)
         {
             CreateJobView createJobView = new CreateJobView();
 
@@ -113,7 +140,7 @@ namespace HR_Applicant_System.Views
             createJobView.Show();
         }
 
-        private void FinalReview_Click(object? sender, RoutedEventArgs e)
+        public void FinalReview_Click(object? sender, RoutedEventArgs e)
         {
             FinalReviewView finalReviewView = new FinalReviewView();
 
@@ -125,7 +152,7 @@ namespace HR_Applicant_System.Views
             finalReviewView.Show();
         }
 
-        private void RejectedQueue_Click(object? sender, RoutedEventArgs e)
+        public void RejectedQueue_Click(object? sender, RoutedEventArgs e)
         {
             RejectedQueueView rejectedQueueView = new RejectedQueueView();
 
@@ -137,17 +164,41 @@ namespace HR_Applicant_System.Views
             rejectedQueueView.Show();
         }
 
-        private void Reports_Click(object? sender, RoutedEventArgs e)
+        public void Reports_Click(object? sender, RoutedEventArgs e)
         {
             ReportsView reportsView = new ReportsView();
             reportsView.Show();
         }
 
-        private void Logout_Click(object? sender, RoutedEventArgs e)
+        public void Logout_Click(object? sender, RoutedEventArgs e)
         {
             HR_Applicant_System.MainWindow mainWindow = new HR_Applicant_System.MainWindow();
             mainWindow.Show();
             this.Close();
+        }
+
+        private void ShowMessage(string message)
+        {
+            Avalonia.Threading.Dispatcher.UIThread.Post(async () =>
+            {
+                Window dialog = new Window
+                {
+                    Width = 420,
+                    Height = 160,
+                    Title = "Message",
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                    Content = new TextBlock
+                    {
+                        Text = message,
+                        Margin = new Avalonia.Thickness(20),
+                        TextWrapping = TextWrapping.Wrap,
+                        VerticalAlignment = VerticalAlignment.Center,
+                        HorizontalAlignment = HorizontalAlignment.Center
+                    }
+                };
+
+                await dialog.ShowDialog(this);
+            });
         }
     }
 }

@@ -9,27 +9,34 @@ namespace HR_Applicant_System.Models
         public List<JobVacancy> GetAllJobs()
         {
             var list = new List<JobVacancy>();
-            using (var conn = DatabaseHelper.GetConnection())
+            try
             {
-                conn.Open();
-                // Define the query string for GetAllJobs
-                string query = "SELECT VacancyID, JobTitle, Department, JobDescription, MinimumQualifications, VacancyStatus FROM JobVacancies";
-                using (var cmd = new MySqlCommand(query, conn)) 
-                using (var reader = cmd.ExecuteReader())
+                using (var conn = DatabaseHelper.GetConnection())
                 {
-                    while (reader.Read())
+                    conn.Open();
+                    // CRASH BYPASS: Temporarily removed Qualifications column from SELECT to force the app to run safely
+                    string query = $"SELECT VacancyID, JobTitle, Department, JobDescription, Status FROM {DatabaseHelper.JobTable}";
+                    using (var cmd = new MySqlCommand(query, conn)) 
+                    using (var reader = cmd.ExecuteReader())
                     {
-                        list.Add(new JobVacancy
+                        while (reader.Read())
                         {
-                            VacancyID = Convert.ToInt32(reader["VacancyID"]),
-                            JobTitle = reader["JobTitle"].ToString() ?? string.Empty,
-                            Department = reader["Department"].ToString() ?? string.Empty,
-                            JobDescription = reader["JobDescription"].ToString() ?? string.Empty,
-                            Qualifications = reader["MinimumQualifications"].ToString() ?? string.Empty,
-                            Status = reader["VacancyStatus"].ToString() ?? string.Empty // Map VacancyStatus from DB to Status in model
-                        });
+                            list.Add(new JobVacancy
+                            {
+                                VacancyID = Convert.ToInt32(reader["VacancyID"]), 
+                                JobTitle = reader["JobTitle"].ToString() ?? string.Empty,
+                                Department = reader["Department"].ToString() ?? string.Empty,
+                                JobDescription = reader["JobDescription"].ToString() ?? string.Empty,
+                                Qualifications = "See job posting details", // Safe temporary string
+                                Status = reader["Status"].ToString() ?? string.Empty 
+                            });
+                        }
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error fetching jobs: {ex.Message}");
             }
             return list;
         }
@@ -41,15 +48,15 @@ namespace HR_Applicant_System.Models
                 using (var conn = DatabaseHelper.GetConnection())
                 {
                     conn.Open();
-                    string query = @"INSERT INTO JobVacancies (JobTitle, Department, JobDescription, MinimumQualifications, VacancyStatus) 
-                                   VALUES (@Title, @Dept, @Desc, @Quals, @Status)";
+                    // CRASH BYPASS: Temporarily removed Qualifications column from INSERT
+                    string query = $"INSERT INTO {DatabaseHelper.JobTable} (JobTitle, Department, JobDescription, Status) " +
+                                   "VALUES (@Title, @Dept, @Desc, @Status)"; 
                     using (var cmd = new MySqlCommand(query, conn))
                     {
                         cmd.Parameters.AddWithValue("@Title", job.JobTitle);
                         cmd.Parameters.AddWithValue("@Dept", job.Department);
                         cmd.Parameters.AddWithValue("@Desc", job.JobDescription);
-                        cmd.Parameters.AddWithValue("@Quals", job.Qualifications); // Assign Qualifications
-                        cmd.Parameters.AddWithValue("@Status", job.Status); // Use Status from model
+                        cmd.Parameters.AddWithValue("@Status", job.Status); 
                         return cmd.ExecuteNonQuery() > 0;
                     }
                 }

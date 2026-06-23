@@ -1,88 +1,79 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:views="clr-namespace:HR_Applicant_System.Views"
              xmlns:vm="using:HR_Applicant_System.ViewModels"
+             xmlns:models="using:HR_Applicant_System.Models"
+             mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="600"
              x:Class="HR_Applicant_System.Views.ApplicantListView"
-             x:DataType="vm:ApplicantListViewModel"
-             Background="#F8F9FA">
+             x:DataType="vm:ApplicantListViewModel">
 
-    <Grid ColumnDefinitions="350, *">
-        <Border Grid.Column="0" Background="White" BorderBrush="#E9ECEF" BorderThickness="0,0,1,0" Padding="20">
-            <StackPanel Spacing="15">
-                <TextBlock Text="HR Staff Profile" FontSize="18" FontWeight="Bold" Foreground="#212529" Margin="0,0,0,10"/>
-                
-                <StackPanel Spacing="5">
-                    <TextBlock Text="Full Name" FontSize="12" Foreground="#6C757D" FontWeight="SemiBold"/>
-                    <TextBox Text="{Binding FullName, Mode=TwoWay}"/>
+    <Grid ColumnDefinitions="240, *">
+        
+        <Border Grid.Column="0" Background="#1E1E24" BorderBrush="#333333" BorderThickness="0,0,1,0">
+            <Grid RowDefinitions="Auto, *, Auto" Margin="15">
+                <StackPanel Grid.Row="0" Spacing="5" Margin="0,10,0,30">
+                    <TextBlock Text="HR SYSTEMS" FontSize="18" FontWeight="Bold" Foreground="#10B981"/>
+                    <TextBlock Text="Capstone Workspace" FontSize="11" Foreground="Gray"/>
                 </StackPanel>
 
-                <StackPanel Spacing="5">
-                    <TextBlock Text="Email Address" FontSize="12" Foreground="#6C757D" FontWeight="SemiBold"/>
-                    <TextBox Text="{Binding StaffEmail, Mode=TwoWay}"/>
+                <StackPanel Grid.Row="1" Spacing="10">
+                    <Button Content="Dashboard Pipeline" 
+                            HorizontalAlignment="Stretch" 
+                            HorizontalContentAlignment="Left"
+                            Background="#2D2D34" 
+                            Foreground="White" 
+                            Padding="12,10"/>
+                    <Button Content="Applications Queue" 
+                            HorizontalAlignment="Stretch" 
+                            HorizontalContentAlignment="Left"
+                            Background="Transparent" 
+                            Foreground="LightGray" 
+                            Padding="12,10"/>
                 </StackPanel>
 
-                <StackPanel Spacing="5">
-                    <TextBlock Text="Department" FontSize="12" Foreground="#6C757D" FontWeight="SemiBold"/>
-                    <TextBox Text="{Binding Department, Mode=TwoWay}"/>
-                </StackPanel>
-
-                <StackPanel Spacing="5">
-                    <TextBlock Text="Bio / System Notes" FontSize="12" Foreground="#6C757D" FontWeight="SemiBold"/>
-                    <TextBox Text="{Binding Bio, Mode=TwoWay}" Height="80" AcceptsReturn="True" TextWrapping="Wrap"/>
-                </StackPanel>
-
-                <Button Content="Save Profile" 
-                        Command="{Binding SaveProfile}" 
-                        Background="#0D6EFD" 
-                        Foreground="White" 
-                        HorizontalAlignment="Stretch" 
-                        HorizontalContentAlignment="Center" 
-                        Padding="10" 
-                        Margin="0,10,0,0"/>
-            </StackPanel>
+                <TextBlock Grid.Row="2" Text="v1.0.0 Stable" FontSize="10" Foreground="DimGray" HorizontalAlignment="Center"/>
+            </Grid>
         </Border>
 
-        <Grid Grid.Column="1" RowDefinitions="Auto, *" Margin="20">
+        <Grid Grid.Column="1" RowDefinitions="Auto, *, Auto" Margin="20">
+            
             <Grid Grid.Row="0" ColumnDefinitions="*, Auto" Margin="0,0,0,20">
                 <StackPanel Grid.Column="0">
-                    <TextBlock Text="Applicant Evaluation Pipeline" FontSize="20" FontWeight="Bold" Foreground="#212529"/>
-                    <TextBlock Text="Live tracking records connected to hr_capstone_db" FontSize="12" Foreground="#6C757D"/>
+                    <TextBlock Text="Applicant Evaluation Pipeline" FontSize="20" FontWeight="Bold" Foreground="#FFFFFF"/>
+                    <TextBlock Text="Live tracking records connected to hr_applicant_system" FontSize="12" Foreground="#10B981"/>
                 </StackPanel>
                 
-                <Button Grid.Column="1" 
-                        Content="Sync Workspace Data" 
-                        Command="{Binding RefreshDashboard}" 
-                        Background="#198754" 
-                        Foreground="White" 
+                <Button Grid.Column="1"
+                        Content="Sync Workspace Data"
+                        Command="{Binding RefreshDashboard}"
+                        Background="#198754"
+                        Foreground="White"
                         Padding="12,8"
                         FontWeight="SemiBold"/>
             </Grid>
-
-            <ListBox Grid.Row="1" ItemsSource="{Binding Applicants}" Background="Transparent">
+            
+            <ListBox Grid.Row="1" 
+                     ItemsSource="{Binding FilteredApplicants}" 
+                     SelectedItem="{Binding SelectedApplicant}"
+                     Name="applicantList">
                 <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <Border Margin="0,0,0,10" Padding="15" Background="White" CornerRadius="6" BoxShadow="0 2 4 0 #10000000">
-                            <Grid ColumnDefinitions="*, *, *">
-                                <StackPanel Grid.Column="0" Spacing="2">
-                                    <TextBlock Text="Applicant Name" FontSize="11" Foreground="#6C757D"/>
-                                    <TextBlock Text="{Binding Name}" FontWeight="Bold" Foreground="#212529" FontSize="14"/>
+                    <DataTemplate x:DataType="models:Application">
+                        <Border BorderBrush="#333333" BorderThickness="1" CornerRadius="4" Padding="10" Margin="0,2">
+                            <Grid ColumnDefinitions="*, Auto">
+                                <StackPanel Grid.Column="0" Spacing="5">
+                                    <TextBlock Text="{Binding Name}" FontWeight="Bold" FontSize="14" Foreground="White"/>
+                                    <TextBlock Text="{Binding Position}" Foreground="LightGray" FontSize="12"/>
                                 </StackPanel>
-                                
-                                <StackPanel Grid.Column="1" Spacing="2">
-                                    <TextBlock Text="Target Position" FontSize="11" Foreground="#6C757D"/>
-                                    <TextBlock Text="{Binding Position}" Foreground="#495057" FontSize="14"/>
-                                </StackPanel>
-                                
-                                <StackPanel Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" Spacing="2">
-                                    <TextBlock Text="Status" FontSize="11" Foreground="#6C757D" HorizontalAlignment="Right"/>
-                                    <Border Background="#E8F5E9" Padding="8,4" CornerRadius="4">
-                                        <TextBlock Text="{Binding Status}" FontWeight="Bold" Foreground="#2E7D32" FontSize="12"/>
-                                    </Border>
-                                </StackPanel>
+                                <TextBlock Grid.Column="1" Text="{Binding Status}" 
+                                           Foreground="#FFB300" VerticalAlignment="Center" FontWeight="Bold"/>
                             </Grid>
                         </Border>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
+            
         </Grid>
     </Grid>
 </UserControl>

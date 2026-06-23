@@ -3,38 +3,47 @@
         x:Class="HR_Applicant_System.MainWindow"
         Width="900"
         Height="600"
-        Title="HR Applicant System">
+        Title="HR Applicant System"
+        Background="#1e1e1e">
 
-	<Grid RowDefinitions="120,*" Background="#F3F4F6">
-
-		<Border Background="#1F2937" Padding="20">
-			<TextBlock Text="HR Applicant Process System"
-                       Foreground="White"
+    <Grid RowDefinitions="120,*">
+        
+        <Border Background="#1F2937" Padding="20">
+            <TextBlock Text="HR Applicant Process System"
+                       Foreground="#ffffff"
                        FontSize="30"
                        FontWeight="Bold"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center"/>
-		</Border>
+        </Border>
 
-		<StackPanel Grid.Row="1"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    Spacing="15"
-                    Width="320">
-
-			<Button Content="Applicant Portal"
-                    Height="45"
+        <StackPanel Grid.Row="1" 
+                        HorizontalAlignment="Center" 
+                        VerticalAlignment="Center" 
+                        Spacing="15" 
+                        Width="320">
+            
+            <Button Content="Applicant Portal" 
+                    Height="45" 
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Center"
+                    VerticalContentAlignment="Center"
                     Click="Applicant_Click"/>
-
-			<Button Content="HR Staff Portal"
-                    Height="45"
-                    Click="Staff_Click"/>aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-
-			<Button Content="Admin / Manager Dashboard"
-                    Height="45"
+            
+            <Button Content="HR Staff Portal" 
+                    Height="45" 
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Center"
+                    VerticalContentAlignment="Center"
+                    Click="Staff_Click"/>
+            
+            <Button Content="Admin / Manager Dashboard" 
+                    Height="45" 
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Center"
+                    VerticalContentAlignment="Center"
                     Click="Admin_Click"/>
-
-		</StackPanel>
-
-	</Grid>
+            
+        </StackPanel>
+    </Grid>
 </Window>

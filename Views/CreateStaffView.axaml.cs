@@ -22,18 +22,18 @@ namespace HR_Applicant_System.Views
 
             txtStaffEmail = new TextBox
             {
-                Watermark = "Enter staff email"
+                PlaceholderText = "Enter staff email"
             };
 
             txtTempPassword = new TextBox
             {
-                Watermark = "Enter temporary password",
+                PlaceholderText = "Enter temporary password",
                 PasswordChar = '*'
             };
 
             txtConfirmPassword = new TextBox
             {
-                Watermark = "Confirm password",
+                PlaceholderText = "Confirm password",
                 PasswordChar = '*'
             };
 
@@ -55,23 +55,24 @@ namespace HR_Applicant_System.Views
                     {
                         Text = "Create HR Staff Account",
                         FontSize = 24,
-                        FontWeight = FontWeight.Bold
+                        FontWeight = FontWeight.Bold,
+                        Foreground = Brushes.White
                     },
 
                     new TextBlock
                     {
                         Text = "Admin/Manager can create a staff login account. Staff profile details can be completed later.",
                         TextWrapping = TextWrapping.Wrap,
-                        Foreground = Brushes.Gray
+                        Foreground = new SolidColorBrush(Color.Parse("#e0e0e0"))
                     },
 
-                    new TextBlock { Text = "Email Address" },
+                    new TextBlock { Text = "Email Address", Foreground = Brushes.White },
                     txtStaffEmail,
 
-                    new TextBlock { Text = "Temporary Password" },
+                    new TextBlock { Text = "Temporary Password", Foreground = Brushes.White },
                     txtTempPassword,
 
-                    new TextBlock { Text = "Confirm Password" },
+                    new TextBlock { Text = "Confirm Password", Foreground = Brushes.White },
                     txtConfirmPassword,
 
                     btnCreate
@@ -80,7 +81,7 @@ namespace HR_Applicant_System.Views
 
             Border card = new Border
             {
-                Background = Brushes.White,
+                Background = new SolidColorBrush(Color.Parse("#252525")),
                 CornerRadius = new CornerRadius(10),
                 Padding = new Thickness(30),
                 Width = 400,
@@ -91,7 +92,7 @@ namespace HR_Applicant_System.Views
 
             Grid mainGrid = new Grid
             {
-                Background = new SolidColorBrush(Color.Parse("#F3F4F6")),
+                Background = new SolidColorBrush(Color.Parse("#1e1e1e")),
                 Children =
                 {
                     card
@@ -125,8 +126,7 @@ namespace HR_Applicant_System.Views
                 {
                     conn.Open();
 
-                    string checkQuery = "SELECT COUNT(*) FROM Users WHERE Email = @Email";
-
+                    string checkQuery = $"SELECT COUNT(*) FROM {DatabaseHelper.StaffTable} WHERE Email = @Email";
                     using (MySqlCommand checkCmd = new MySqlCommand(checkQuery, conn))
                     {
                         checkCmd.Parameters.AddWithValue("@Email", email);
@@ -140,10 +140,10 @@ namespace HR_Applicant_System.Views
                         }
                     }
 
-                    string insertQuery = @"INSERT INTO Users 
-                               (Email, Password, RoleID, AccountStatus) 
+                    string insertQuery = $@"INSERT INTO {DatabaseHelper.StaffTable} 
+                               (Email, Password) 
                                VALUES 
-                               (@Email, @Password, 3, 'Active')";
+                               (@Email, @Password)";
 
                     using (MySqlCommand cmd = new MySqlCommand(insertQuery, conn))
                     {
@@ -168,22 +168,25 @@ namespace HR_Applicant_System.Views
 
         private async void ShowMessage(string message)
         {
-            Window dialog = new Window
+            Avalonia.Threading.Dispatcher.UIThread.Post(async () =>
             {
-                Width = 350,
-                Height = 150,
-                Title = "Message",
-                Content = new TextBlock
+                Window dialog = new Window
                 {
-                    Text = message,
-                    Margin = new Thickness(20),
-                    TextWrapping = TextWrapping.Wrap,
-                    VerticalAlignment = VerticalAlignment.Center,
-                    HorizontalAlignment = HorizontalAlignment.Center
-                }
-            };
+                    Width = 350,
+                    Height = 150,
+                    Title = "Message",
+                    Content = new TextBlock
+                    {
+                        Text = message,
+                        Margin = new Thickness(20),
+                        TextWrapping = TextWrapping.Wrap,
+                        VerticalAlignment = VerticalAlignment.Center,
+                        HorizontalAlignment = HorizontalAlignment.Center
+                    }
+                };
 
-            await dialog.ShowDialog(this);
+                await dialog.ShowDialog(this);
+            });
         }
     }
 }

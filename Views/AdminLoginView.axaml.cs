@@ -59,21 +59,22 @@ namespace HR_Applicant_System.Views
                         Text = "Admin / Manager Login",
                         FontSize = 26,
                         FontWeight = FontWeight.Bold,
-                        HorizontalAlignment = HorizontalAlignment.Center
+                        HorizontalAlignment = HorizontalAlignment.Center,
+                        Foreground = Brushes.White
                     },
 
                     new TextBlock
                     {
                         Text = "Enter authorized admin credentials to access the dashboard.",
                         TextWrapping = TextWrapping.Wrap,
-                        Foreground = Brushes.Gray,
+                        Foreground = new SolidColorBrush(Color.Parse("#e0e0e0")),
                         HorizontalAlignment = HorizontalAlignment.Center
                     },
 
-                    new TextBlock { Text = "Email Address" },
+                    new TextBlock { Text = "Email Address", Foreground = Brushes.White },
                     txtEmail,
 
-                    new TextBlock { Text = "Password" },
+                    new TextBlock { Text = "Password", Foreground = Brushes.White },
                     txtPassword,
 
                     btnLogin,
@@ -83,7 +84,7 @@ namespace HR_Applicant_System.Views
 
             Border card = new Border
             {
-                Background = Brushes.White,
+                Background = new SolidColorBrush(Color.Parse("#252525")),
                 CornerRadius = new CornerRadius(10),
                 Padding = new Thickness(30),
                 Width = 360,
@@ -94,7 +95,7 @@ namespace HR_Applicant_System.Views
 
             Grid mainGrid = new Grid
             {
-                Background = new SolidColorBrush(Color.Parse("#F3F4F6")),
+                Background = new SolidColorBrush(Color.Parse("#1e1e1e")),
                 Children =
                 {
                     card
@@ -121,7 +122,7 @@ namespace HR_Applicant_System.Views
                 {
                     conn.Open();
                     // Query users table for Email/Password and ensure they have an Admin (1) or HR Manager (2) role
-                    string query = "SELECT COUNT(*) FROM users WHERE Email = @Email AND Password = @Password AND RoleID IN (1, 2)";
+                    string query = $"SELECT COUNT(*) FROM {DatabaseHelper.StaffTable} WHERE Email = @Email AND Password = @Password";
                     using (var cmd = new MySqlCommand(query, conn))
                     {
                         cmd.Parameters.AddWithValue("@Email", email);
@@ -157,22 +158,25 @@ namespace HR_Applicant_System.Views
 
         private async void ShowMessage(string message)
         {
-            Window dialog = new Window
+            Avalonia.Threading.Dispatcher.UIThread.Post(async () =>
             {
-                Width = 360,
-                Height = 150,
-                Title = "Message",
-                Content = new TextBlock
+                Window dialog = new Window
                 {
-                    Text = message,
-                    Margin = new Thickness(20),
-                    TextWrapping = TextWrapping.Wrap,
-                    VerticalAlignment = VerticalAlignment.Center,
-                    HorizontalAlignment = HorizontalAlignment.Center
-                }
-            };
+                    Width = 360,
+                    Height = 150,
+                    Title = "Message",
+                    Content = new TextBlock
+                    {
+                        Text = message,
+                        Margin = new Thickness(20),
+                        TextWrapping = TextWrapping.Wrap,
+                        VerticalAlignment = VerticalAlignment.Center,
+                        HorizontalAlignment = HorizontalAlignment.Center
+                    }
+                };
 
-            await dialog.ShowDialog(this);
+                await dialog.ShowDialog(this);
+            });
         }
     }
 }

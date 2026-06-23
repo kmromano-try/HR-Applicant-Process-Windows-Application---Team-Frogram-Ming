@@ -1,99 +1,202 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Windows.Input;
-using ReactiveUI;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using HR_Applicant_System.Models;
 
 namespace HR_Applicant_System.ViewModels
 {
-    public class ApplicantListViewModel : ReactiveObject
+    public class ApplicantListViewModel : INotifyPropertyChanged
     {
-        private string _staffEmail = "hugh.franco@company.edu.ph";
-        public string StaffEmail
+        private readonly ApplicationRepository _repo;
+        private ObservableCollection<Application> _applicants;
+        private ObservableCollection<Application> _filteredApplicants;
+        private Application? _selectedApplicant;
+        private string _searchText = string.Empty;
+        private string _fullName = string.Empty;
+        private string _bio = string.Empty;
+        private int _pendingCount;
+        private int _vacantCount;
+        private int _reviewedCount;
+
+        public ObservableCollection<Application> Applicants
         {
-            get => _staffEmail;
-            set => this.RaiseAndSetIfChanged(ref _staffEmail, value);
+            get => _applicants;
+            set
+            {
+                _applicants = value;
+                OnPropertyChanged();
+                ApplyFilter();
+            }
         }
 
-        private string _fullName = "Hugh Gabriel Franco";
+        public ObservableCollection<Application> FilteredApplicants
+        {
+            get => _filteredApplicants;
+            set
+            {
+                _filteredApplicants = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public Application? SelectedApplicant
+        {
+            get => _selectedApplicant;
+            set
+            {
+                _selectedApplicant = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string SearchText
+        {
+            get => _searchText;
+            set
+            {
+                _searchText = value;
+                OnPropertyChanged();
+                ApplyFilter();
+            }
+        }
+
         public string FullName
         {
             get => _fullName;
-            set => this.RaiseAndSetIfChanged(ref _fullName, value);
+            set
+            {
+                _fullName = value;
+                OnPropertyChanged();
+            }
         }
 
-        private DateTimeOffset? _birthdate = new DateTimeOffset(2005, 1, 1, 0, 0, 0, TimeSpan.Zero);
-        public DateTimeOffset? Birthdate
-        {
-            get => _birthdate;
-            set => this.RaiseAndSetIfChanged(ref _birthdate, value);
-        }
-
-        private string _department = "Human Resources Development";
-        public string Department
-        {
-            get => _department;
-            set => this.RaiseAndSetIfChanged(ref _department, value);
-        }
-
-        private string _bio = "Lead HR Specialist coordinating the Capstone Evaluation Systems pipeline.";
         public string Bio
         {
             get => _bio;
-            set => this.RaiseAndSetIfChanged(ref _bio, value);
+            set
+            {
+                _bio = value;
+                OnPropertyChanged();
+            }
         }
 
-        public ObservableCollection<ApplicantItem> Applicants { get; set; }
+        public int PendingCount
+        {
+            get => _pendingCount;
+            set
+            {
+                _pendingCount = value;
+                OnPropertyChanged();
+            }
+        }
 
-        public ICommand SaveProfile { get; }
-        public ICommand RefreshDashboard { get; }
+        public int VacantCount
+        {
+            get => _vacantCount;
+            set
+            {
+                _vacantCount = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public int ReviewedCount
+        {
+            get => _reviewedCount;
+            set
+            {
+                _reviewedCount = value;
+                OnPropertyChanged();
+            }
+        }
 
         public ApplicantListViewModel()
         {
-            Applicants = new ObservableCollection<ApplicantItem>();
-            
-            LoadDataFromDatabase();
-
-            SaveProfile = ReactiveCommand.Create(() =>
-            {
-                System.Diagnostics.Debug.WriteLine($"[HR Portal] Profile saved successfully for {FullName}.");
-            });
-
-            RefreshDashboard = ReactiveCommand.Create(() =>
-            {
-                LoadDataFromDatabase();
-            });
+            _repo = new ApplicationRepository();
+            _applicants = new ObservableCollection<Application>();
+            _filteredApplicants = new ObservableCollection<Application>();
+            RefreshDashboard();
         }
 
-        private void LoadDataFromDatabase()
+        public ApplicantListViewModel(object userContext) : this()
+        {
+        }
+
+        public void RefreshDashboard()
         {
             try
             {
-                var repo = new ApplicationRepository();
-                var databaseRecords = repo.GetAllActiveApplications();
-
-                Applicants.Clear();
-                foreach (var item in databaseRecords)
+                Console.WriteLine("[DASHBOARD] Fetching applications from the database...");
+                var records = _repo.GetAllActiveApplications();
+                
+                if (records != null)
                 {
-                    Applicants.Add(item);
+                    Console.WriteLine($"[DASHBOARD] Successfully read {records.Count} total rows from database.");
+                    
+                    var staffReviewOnly = records.FindAll(a => a.Status != "For Final Review");
+                    Applicants = new ObservableCollection<Application>(staffReviewOnly);
+                    
+                    UpdateMetrics(records);
+                    Console.WriteLine($"[DASHBOARD] Pipeline tracking collection populated with {Applicants.Count} active apps.");
                 }
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Database connection failed: {ex.Message}");
-                
-                Applicants.Clear();
-                Applicants.Add(new ApplicantItem { Name = "Alice Juan (Mock Data)", Position = "Junior Python Developer", Status = "Pending Review" });
-                Applicants.Add(new ApplicantItem { Name = "Mark Carandang (Mock Data)", Position = "Database Administrator", Status = "Interviewing" });
-                Applicants.Add(new ApplicantItem { Name = "Sophia Mendoza (Mock Data)", Position = "QA Automation Engineer", Status = "Technical Test" });
+                Console.WriteLine($"\n[CRITICAL DASHBOARD ERROR] The dashboard loading sequence crashed!");
+                Console.WriteLine($"Error Message: {ex.Message}");
+                Console.WriteLine($"Stack Trace:\n{ex.StackTrace}\n");
             }
         }
-    }
 
-    public class ApplicantItem
-    {
-        public string Name { get; set; } = string.Empty;
-        public string Position { get; set; } = string.Empty;
-        public string Status { get; set; } = string.Empty;
+        private void ApplyFilter()
+        {
+            if (string.IsNullOrWhiteSpace(SearchText))
+            {
+                FilteredApplicants = new ObservableCollection<Application>(Applicants);
+                return;
+            }
+
+            var filtered = new List<Application>();
+            foreach (var app in Applicants)
+            {
+                if (app.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
+                    app.Position.Contains(SearchText, StringComparison.OrdinalIgnoreCase))
+                {
+                    filtered.Add(app);
+                }
+            }
+            FilteredApplicants = new ObservableCollection<Application>(filtered);
+        }
+
+        private void UpdateMetrics(List<Application> allRecords)
+        {
+            int pending = 0;
+            int reviewed = 0;
+
+            foreach (var app in allRecords)
+            {
+                if (app.Status == "Pending" || app.Status == "Under Review")
+                {
+                    pending++;
+                }
+                else if (app.Status == "Hired" || app.Status == "Rejected" || app.Status == "For Final Review")
+                {
+                    reviewed++;
+                }
+            }
+
+            PendingCount = pending;
+            ReviewedCount = reviewed;
+            VacantCount = 5; 
+        }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
     }
-}   
+}

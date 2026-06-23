@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Layout;
@@ -22,13 +22,14 @@ namespace HR_Applicant_System.Views
             {
                 Text = "Staff Rejected Queue",
                 FontSize = 26,
-                FontWeight = FontWeight.Bold
+                FontWeight = FontWeight.Bold,
+                Foreground = Brushes.White
             };
 
             TextBlock subtitle = new TextBlock
             {
                 Text = "This section shows applicants rejected by HR Staff during initial screening. It serves as a read-only audit log for Admin/Manager transparency.",
-                Foreground = Brushes.Gray,
+                Foreground = new SolidColorBrush(Color.Parse("#e0e0e0")),
                 TextWrapping = TextWrapping.Wrap
             };
 
@@ -58,7 +59,7 @@ namespace HR_Applicant_System.Views
 
             Border card = new Border
             {
-                Background = Brushes.White,
+                Background = new SolidColorBrush(Color.Parse("#252525")),
                 CornerRadius = new CornerRadius(10),
                 Padding = new Thickness(30),
                 Margin = new Thickness(25),
@@ -67,7 +68,7 @@ namespace HR_Applicant_System.Views
 
             Grid mainGrid = new Grid
             {
-                Background = new SolidColorBrush(Color.Parse("#F3F4F6")),
+                Background = new SolidColorBrush(Color.Parse("#1e1e1e")),
                 Children =
                 {
                     card
@@ -89,23 +90,17 @@ namespace HR_Applicant_System.Views
                 {
                     conn.Open();
 
-                    string query = @"
-                        SELECT 
+                    string query = $@"
+                        SELECT
                             a.ApplicationID,
                             ap.FullName,
                             j.JobTitle,
-                            a.StaffReviewer,
-                            a.ScreeningRemarks,
-                            a.CurrentStatus
-                        FROM Applications a
-                        INNER JOIN Applicants ap ON a.ApplicantID = ap.ApplicantID
-                        INNER JOIN JobVacancies j ON a.JobID = j.JobID
-                        WHERE a.CurrentStatus = 'Rejected'
-                        AND NOT EXISTS (
-                            SELECT 1 
-                            FROM HiringDecisions h
-                            WHERE h.ApplicationID = a.ApplicationID
-                        )";
+                            a.StaffFeedback,
+                            a.Status
+                        FROM {DatabaseHelper.ApplicationTable} a
+                        INNER JOIN {DatabaseHelper.ApplicantTable} ap ON a.ApplicantID = ap.ApplicantID
+                        INNER JOIN {DatabaseHelper.JobTable} j ON a.VacancyID = j.VacancyID
+                        WHERE a.Status = 'Rejected'";
 
                     using (MySqlCommand cmd = new MySqlCommand(query, conn))
                     using (MySqlDataReader reader = cmd.ExecuteReader())
@@ -116,8 +111,7 @@ namespace HR_Applicant_System.Views
                                 "Application #" + reader["ApplicationID"] +
                                 " | " + reader["FullName"] +
                                 " | " + reader["JobTitle"] +
-                                " | Reviewed by: " + reader["StaffReviewer"] +
-                                " | Reason: " + reader["ScreeningRemarks"];
+                                " | Feedback: " + reader["StaffFeedback"];
 
                             rejectedList.Items.Add(item);
                         }
@@ -137,22 +131,25 @@ namespace HR_Applicant_System.Views
 
         private async void ShowMessage(string message)
         {
-            Window dialog = new Window
+            // Ensure UI updates are performed on the UI thread
+            Avalonia.Threading.Dispatcher.UIThread.Post(() =>
             {
-                Width = 420,
-                Height = 160,
-                Title = "Message",
-                Content = new TextBlock
+                Window dialog = new Window
                 {
-                    Text = message,
-                    Margin = new Thickness(20),
-                    TextWrapping = TextWrapping.Wrap,
-                    VerticalAlignment = VerticalAlignment.Center,
-                    HorizontalAlignment = HorizontalAlignment.Center
-                }
-            };
-
-            await dialog.ShowDialog(this);
+                    Width = 420,
+                    Height = 160,
+                    Title = "Message",
+                    Content = new TextBlock
+                    {
+                        Text = message,
+                        Margin = new Thickness(20),
+                        TextWrapping = TextWrapping.Wrap,
+                        VerticalAlignment = VerticalAlignment.Center,
+                        HorizontalAlignment = HorizontalAlignment.Center
+                    }
+                };
+                dialog.ShowDialog(this); // ShowDialog is already async, no need for await here
+            });
         }
     }
 }
