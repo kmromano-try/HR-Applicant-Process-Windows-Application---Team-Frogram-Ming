@@ -1,26 +1,22 @@
 using Avalonia;
-using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using HR_Applicant_System.Views;
 
-namespace HR_Applicant_System;
-
-public partial class App : Application
+namespace HR_Applicant_System
 {
-    public override void Initialize()
+    public partial class App : Application
     {
-        AvaloniaXamlLoader.Load(this);
-    }
+        public override void Initialize() => AvaloniaXamlLoader.Load(this);
 
-    public override void OnFrameworkInitializationCompleted()
-    {
-        if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+        public override void OnFrameworkInitializationCompleted()
         {
-            // FIX: Stops the app from crashing/killing itself when MainWindow closes
-            desktop.ShutdownMode = ShutdownMode.OnLastWindowClose;
-            desktop.MainWindow = new MainWindow();
+            if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+            {
+                // Launches your synchronized login window first
+                desktop.MainWindow = new StaffLoginView();
+            }
+            base.OnFrameworkInitializationCompleted();
         }
-
-        base.OnFrameworkInitializationCompleted();
     }
 }

@@ -1,11 +1,11 @@
-﻿using Avalonia.Controls;
+using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 
 namespace HR_Applicant_System.Views
 {
-    public partial class FinalReviewView : Window
+    public partial class StaffLoginView : Window
     {
-        public FinalReviewView()
+        public StaffLoginView()
         {
             InitializeComponent();
         }

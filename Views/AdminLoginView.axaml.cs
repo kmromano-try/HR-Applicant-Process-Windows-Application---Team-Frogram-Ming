@@ -151,8 +151,8 @@ namespace HR_Applicant_System.Views
 
         private void Back_Click(object? sender, RoutedEventArgs e)
         {
-            HR_Applicant_System.MainWindow mainWindow = new HR_Applicant_System.MainWindow();
-            mainWindow.Show();
+            HR_Applicant_System.Views.StaffLoginView staffLoginView = new HR_Applicant_System.Views.StaffLoginView();
+            staffLoginView.Show();
             this.Close();
         }
 

@@ -31,8 +31,8 @@ namespace HR_Applicant_System.Views
 
         private void Logout_Click(object? sender, RoutedEventArgs e)
         {
-            var mainWindow = new MainWindow();
-            mainWindow.Show();
+            var StaffLoginView = new StaffLoginView();
+            StaffLoginView.Show();
             this.Close();
         }
     }

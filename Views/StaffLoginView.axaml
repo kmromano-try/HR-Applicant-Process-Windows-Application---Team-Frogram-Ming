@@ -1,0 +1,11 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="HR_Applicant_System.Views.StaffLoginView"
+        Title="Staff Login"
+        Width="400"
+        Height="450"
+        WindowStartupLocation="CenterScreen">
+    <Grid>
+        <TextBlock Text="Staff Login Window" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18"/>
+    </Grid>
+</Window>

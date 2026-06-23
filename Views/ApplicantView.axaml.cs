@@ -83,10 +83,11 @@ namespace HR_Applicant_System.Views
             };
             btnBackToMain.Click += (s, e) =>
             {
-                var mainWindow = new MainWindow();
-                mainWindow.Show();
-                this.Close();
-            };
+                var loginWindow = new StaffLoginView();
+                loginWindow.Show();
+                Close();
+};
+
 
             StackPanel loginFormPanel = new StackPanel
             {
@@ -172,11 +173,13 @@ namespace HR_Applicant_System.Views
 
             btnLogout.Click += (s, e) =>
             {
-                _loggedInApplicantId = 0;
-                var mainWindow = new MainWindow();
-                mainWindow.Show();
-                this.Close();
-            };
+            _loggedInApplicantId = 0;
+            var loginWindow = new StaffLoginView();
+            loginWindow.Show();
+            Close();
+
+};
+
 
             _activeJobsList = new ListBox { Margin = new Thickness(0, 5, 0, 5) };
             _myApplicationsList = new ListBox { Margin = new Thickness(5) };

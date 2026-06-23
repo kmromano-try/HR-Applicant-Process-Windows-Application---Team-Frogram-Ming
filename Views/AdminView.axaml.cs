@@ -18,7 +18,6 @@ namespace HR_Applicant_System.Views
         {
             InitializeComponent();
 
-            // Linking the C# fields to the XAML x:Name components
             activeJobsCountBlock = this.FindControl<TextBlock>("txtActiveJobsCount");
             finalReviewCountBlock = this.FindControl<TextBlock>("txtFinalReviewCount");
             rejectedCountBlock = this.FindControl<TextBlock>("txtRejectedCount");
@@ -28,79 +27,82 @@ namespace HR_Applicant_System.Views
 
         private void LoadDashboardCounts()
         {
-            // 1. Count active job vacancies
             try
             {
                 using (MySqlConnection conn = DatabaseHelper.GetConnection())
                 {
                     conn.Open();
-                    // FIXED: Changed VacancyStatus to Status to match the schema field name
-                    string activeJobsQuery = $"SELECT COUNT(*) FROM {DatabaseHelper.JobTable} WHERE Status = 'Active'";
+
+                    string activeJobsQuery =
+                        $"SELECT COUNT(*) FROM {DatabaseHelper.JobTable} WHERE Status = 'Active'";
+
                     using (MySqlCommand cmd = new MySqlCommand(activeJobsQuery, conn))
                     {
                         int activeJobs = Convert.ToInt32(cmd.ExecuteScalar());
 
                         if (activeJobsCountBlock != null)
-                        {
                             activeJobsCountBlock.Text = activeJobs.ToString();
-                        }
                     }
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Active Jobs counter error: " + ex.Message);
-                if (activeJobsCountBlock != null) activeJobsCountBlock.Text = "0";
+
+                if (activeJobsCountBlock != null)
+                    activeJobsCountBlock.Text = "0";
             }
 
-            // 2. Count applications waiting for Admin/Manager final decision
             try
             {
                 using (MySqlConnection conn = DatabaseHelper.GetConnection())
                 {
                     conn.Open();
-                    string finalReviewQuery = $"SELECT COUNT(*) FROM {DatabaseHelper.ApplicationTable} WHERE Status = 'For Final Review'";
+
+                    string finalReviewQuery =
+                        $"SELECT COUNT(*) FROM {DatabaseHelper.ApplicationTable} WHERE Status = 'For Final Review'";
+
                     using (MySqlCommand cmd = new MySqlCommand(finalReviewQuery, conn))
                     {
                         int finalReview = Convert.ToInt32(cmd.ExecuteScalar());
 
                         if (finalReviewCountBlock != null)
-                        {
                             finalReviewCountBlock.Text = finalReview.ToString();
-                        }
                     }
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Final Review counter error: " + ex.Message);
-                if (finalReviewCountBlock != null) finalReviewCountBlock.Text = "0";
+
+                if (finalReviewCountBlock != null)
+                    finalReviewCountBlock.Text = "0";
             }
 
-            // 3. Count applicants rejected by HR Staff
             try
             {
                 using (MySqlConnection conn = DatabaseHelper.GetConnection())
                 {
                     conn.Open();
-                    // FIXED: Changed CurrentStatus to Status to align with database table properties
-                    string rejectedQuery = $"SELECT COUNT(*) FROM {DatabaseHelper.ApplicationTable} WHERE Status = 'Rejected'";
+
+                    string rejectedQuery =
+                        $"SELECT COUNT(*) FROM {DatabaseHelper.ApplicationTable} WHERE Status = 'Rejected'";
 
                     using (MySqlCommand cmd = new MySqlCommand(rejectedQuery, conn))
                     {
                         int rejected = Convert.ToInt32(cmd.ExecuteScalar());
 
                         if (rejectedCountBlock != null)
-                        {
                             rejectedCountBlock.Text = rejected.ToString();
-                        }
                     }
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Rejected queue counter error: " + ex.Message);
-                if (rejectedCountBlock != null) rejectedCountBlock.Text = "0";
+
+                if (rejectedCountBlock != null)
+                    rejectedCountBlock.Text = "0";
             }
         }
 
@@ -118,7 +120,7 @@ namespace HR_Applicant_System.Views
 
         public void CreateStaff_Click(object? sender, RoutedEventArgs e)
         {
-            CreateStaffView createStaffView = new CreateStaffView();
+            var createStaffView = new CreateStaffView();
 
             createStaffView.Closed += (s, args) =>
             {
@@ -130,7 +132,7 @@ namespace HR_Applicant_System.Views
 
         public void CreateJob_Click(object? sender, RoutedEventArgs e)
         {
-            CreateJobView createJobView = new CreateJobView();
+            var createJobView = new CreateJobView();
 
             createJobView.Closed += (s, args) =>
             {
@@ -142,7 +144,7 @@ namespace HR_Applicant_System.Views
 
         public void FinalReview_Click(object? sender, RoutedEventArgs e)
         {
-            FinalReviewView finalReviewView = new FinalReviewView();
+            var finalReviewView = new FinalReviewView();
 
             finalReviewView.Closed += (s, args) =>
             {
@@ -154,7 +156,7 @@ namespace HR_Applicant_System.Views
 
         public void RejectedQueue_Click(object? sender, RoutedEventArgs e)
         {
-            RejectedQueueView rejectedQueueView = new RejectedQueueView();
+            var rejectedQueueView = new RejectedQueueView();
 
             rejectedQueueView.Closed += (s, args) =>
             {
@@ -166,15 +168,15 @@ namespace HR_Applicant_System.Views
 
         public void Reports_Click(object? sender, RoutedEventArgs e)
         {
-            ReportsView reportsView = new ReportsView();
+            var reportsView = new ReportsView();
             reportsView.Show();
         }
 
         public void Logout_Click(object? sender, RoutedEventArgs e)
         {
-            HR_Applicant_System.MainWindow mainWindow = new HR_Applicant_System.MainWindow();
-            mainWindow.Show();
-            this.Close();
+            var staffLoginView = new StaffLoginView();
+            staffLoginView.Show();
+            Close();
         }
 
         private void ShowMessage(string message)
