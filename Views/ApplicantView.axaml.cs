@@ -10,44 +10,44 @@ using System.Linq;
 using MySql.Data.MySqlClient;
 using HR_Applicant_System.Models;
 
-
 namespace HR_Applicant_System.Views
 {
     public partial class ApplicantView : Window
     {
-        // Login/Registration UI elements
-        private Border _loginCard;
-        private TextBox _loginNameTextBox;
-        private TextBox _loginEmailTextBox;
-        private TextBox _loginPasswordTextBox; // Using ContactNumber as password for applicants
+        private Border? _loginCard;
+        private TextBox? _loginNameTextBox;
+        private TextBox? _loginEmailTextBox;
+        private TextBox? _loginPasswordTextBox;
 
-        // Application UI elements
-        private Grid _applicationLayout;
-        private TextBox txtFullName;
-        private TextBox txtEmail;
-        private TextBox txtContact;
-        private ComboBox cbJobs;
-        private ListBox _jobListBox; // To display open jobs
-        private TextBox _applicantBioTextBox; // For applicant to update their bio
+        private Grid? _applicationLayout;
+        private TextBox? txtFullName;
+        private TextBox? txtEmail;
+        private TextBox? txtContact;
+        private ComboBox? cbJobs;
+        private ListBox? _jobListBox;
+        private TextBox? _applicantBioTextBox;
 
-
-        private ListBox _activeJobsList;
-         private ListBox _myApplicationsList;
-        private ListBox _closedJobsList;
+        private ListBox? _activeJobsList;
+        private ListBox? _myApplicationsList;
+        private ListBox? _closedJobsList;
         private int _loggedInApplicantId = 0;
         private string _loggedInApplicantEmail = string.Empty;
         private string _loggedInApplicantFullName = string.Empty;
 
-        public ApplicantView(int applicantId)
+        public ApplicantView()
         {
-           _loggedInApplicantId = applicantId;
-           
+            InitializeComponent();
+        }
+
+        public ApplicantView(int applicantId) : this()
+        {
+            _loggedInApplicantId = applicantId;
+
             Width = 500;
             Height = 650;
             Title = "Job Application Portal";
             WindowStartupLocation = WindowStartupLocation.CenterScreen;
 
-            // --- Login/Registration Card ---
             _loginNameTextBox = new TextBox { PlaceholderText = "Enter your full name (registration only)" };
             _loginEmailTextBox = new TextBox { PlaceholderText = "Enter your email address" };
             _loginPasswordTextBox = new TextBox { PlaceholderText = "Enter your contact number (used as password)" };
@@ -119,13 +119,11 @@ namespace HR_Applicant_System.Views
                 Child = loginFormPanel
             };
 
-            // --- Application Layout (after login) ---
             txtFullName = new TextBox { PlaceholderText = "Enter your full name" };
             txtEmail = new TextBox { PlaceholderText = "Enter your email address" };
             txtContact = new TextBox { PlaceholderText = "Enter your contact number" };
             _applicantBioTextBox = new TextBox { PlaceholderText = "Tell us about yourself (Bio)", Height = 80, AcceptsReturn = true, TextWrapping = TextWrapping.Wrap };
 
-            // Dropdown for Jobs
             cbJobs = new ComboBox
             {
                 HorizontalAlignment = HorizontalAlignment.Stretch
@@ -155,115 +153,114 @@ namespace HR_Applicant_System.Views
             };
             btnUpdateBio.Click += UpdateBio_Click;
 
-
-_applicationLayout = new Grid
-{
-    Background = new SolidColorBrush(Color.Parse("#1e1e1e")),
-    IsVisible = false,
-    RowDefinitions = new RowDefinitions("*, Auto")
-};
-
-Button btnLogout = new Button
-{
-    Content = "Logout / Back to Main Menu",
-    Height = 40,
-    Background = new SolidColorBrush(Color.Parse("#ef4444")),
-    Foreground = Brushes.White,
-    HorizontalAlignment = HorizontalAlignment.Stretch,
-    Margin = new Thickness(10)
-};
-
-btnLogout.Click += (s, e) =>
-{
-    _loggedInApplicantId = 0;
-    var mainWindow = new MainWindow();
-    mainWindow.Show();
-    this.Close();
-};
-
-_activeJobsList = new ListBox { Margin = new Thickness(0, 5, 0, 5) };
-_myApplicationsList = new ListBox { Margin = new Thickness(5) };
-_closedJobsList = new ListBox { Margin = new Thickness(5) };
-
-TabControl tabControl = new TabControl
-{
-    Margin = new Thickness(10),
-    Items =
-    {
-        new TabItem
-        {
-            Header = "Active Vacancies",
-            Content = new StackPanel
+            _applicationLayout = new Grid
             {
-                Spacing = 10,
+                Background = new SolidColorBrush(Color.Parse("#1e1e1e")),
+                IsVisible = false,
+                RowDefinitions = new RowDefinitions("*, Auto")
+            };
+
+            Button btnLogout = new Button
+            {
+                Content = "Logout / Back to Main Menu",
+                Height = 40,
+                Background = new SolidColorBrush(Color.Parse("#ef4444")),
+                Foreground = Brushes.White,
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                Margin = new Thickness(10)
+            };
+
+            btnLogout.Click += (s, e) =>
+            {
+                _loggedInApplicantId = 0;
+                var mainWindow = new MainWindow();
+                mainWindow.Show();
+                this.Close();
+            };
+
+            _activeJobsList = new ListBox { Margin = new Thickness(0, 5, 0, 5) };
+            _myApplicationsList = new ListBox { Margin = new Thickness(5) };
+            _closedJobsList = new ListBox { Margin = new Thickness(5) };
+
+            TabControl tabControl = new TabControl
+            {
+                Margin = new Thickness(10),
+                Items =
+                {
+                    new TabItem
+                    {
+                        Header = "Active Vacancies",
+                        Content = new StackPanel
+                        {
+                            Spacing = 10,
+                            Children =
+                            {
+                                new TextBlock
+                                {
+                                    Text = "Open Job Vacancies",
+                                    FontSize = 20,
+                                    FontWeight = FontWeight.Bold,
+                                    Foreground = Brushes.White
+                                },
+                                _activeJobsList,
+                                new TextBlock
+                                {
+                                    Text = "Select Position",
+                                    Foreground = Brushes.White
+                                },
+                                cbJobs,
+                                btnSubmit
+                            }
+                        }
+                    },
+
+                    new TabItem
+                    {
+                        Header = "My Applications",
+                        Content = _myApplicationsList
+                    },
+
+                    new TabItem
+                    {
+                        Header = "Closed Jobs",
+                        Content = _closedJobsList
+                    }
+                }
+            };
+
+            Grid.SetRow(tabControl, 0);
+            Grid.SetRow(btnLogout, 1);
+
+            _applicationLayout.Children.Add(tabControl);
+            _applicationLayout.Children.Add(btnLogout);
+
+            var mainContentGrid = new Grid
+            {
+                Background = new SolidColorBrush(Color.Parse("#1e1e1e")),
                 Children =
                 {
-                    new TextBlock
-                    {
-                        Text = "Open Job Vacancies",
-                        FontSize = 20,
-                        FontWeight = FontWeight.Bold,
-                        Foreground = Brushes.White
-                    },
-                    _activeJobsList,
-                    new TextBlock
-                    {
-                        Text = "Select Position",
-                        Foreground = Brushes.White
-                    },
-                    cbJobs,
-                    btnSubmit
+                    _loginCard,
+                    _applicationLayout
                 }
+            };
+
+            Content = mainContentGrid;
+
+            if (_loggedInApplicantId > 0)
+            {
+                _loginCard!.IsVisible = false;
+                _applicationLayout!.IsVisible = true;
+
+                LoadJobsIntoListBox();
+                LoadMyApplications();
+                LoadClosedJobs();
             }
-        },
-
-        new TabItem
-        {
-            Header = "My Applications",
-            Content = _myApplicationsList
-        },
-
-        new TabItem
-        {
-            Header = "Closed Jobs",
-            Content = _closedJobsList
         }
-    }
-};
-
-Grid.SetRow(tabControl, 0);
-Grid.SetRow(btnLogout, 1);
-
-_applicationLayout.Children.Add(tabControl);
-_applicationLayout.Children.Add(btnLogout);
-
-var mainContentGrid = new Grid
-{
-    Background = new SolidColorBrush(Color.Parse("#1e1e1e")),
-    Children =
-    {
-        _loginCard,
-        _applicationLayout
-    }
-};
-
-Content = mainContentGrid; 
-       if (_loggedInApplicantId > 0)
-{
-    _loginCard.IsVisible = false;
-    _applicationLayout.IsVisible = true;
-
-    LoadJobsIntoListBox();
-    LoadMyApplications();
-    LoadClosedJobs();
- }
-        }
-
 
         public void Login_Click(object? sender, RoutedEventArgs e)
         {
-            string email = _loginEmailTextBox.Text ?? "";
-            string contactNumber = _loginPasswordTextBox.Text ?? ""; // Using ContactNumber as password
+            string email = _loginEmailTextBox?.Text ?? "";
+            string contactNumber = _loginPasswordTextBox?.Text ?? "";
 
             if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(contactNumber))
             {
@@ -293,20 +290,20 @@ Content = mainContentGrid;
 
                                 Avalonia.Threading.Dispatcher.UIThread.Post(() =>
                                 {
-                                    txtFullName.Text = _loggedInApplicantFullName;
-                                    txtEmail.Text = _loggedInApplicantEmail;
-                                    txtContact.Text = contactNumber;
-                                    _applicantBioTextBox.Text = bio;
+                                    txtFullName!.Text = _loggedInApplicantFullName;
+                                    txtEmail!.Text = _loggedInApplicantEmail;
+                                    txtContact!.Text = contactNumber;
+                                    _applicantBioTextBox!.Text = bio;
 
                                     txtFullName.IsReadOnly = true;
                                     txtEmail.IsReadOnly = true;
                                     txtContact.IsReadOnly = true;
 
-                                    _loginCard.IsVisible = false;
-                                    _applicationLayout.IsVisible = true;
+                                    _loginCard!.IsVisible = false;
+                                    _applicationLayout!.IsVisible = true;
                                     LoadJobsIntoListBox();
                                     LoadMyApplications();
-                                    ApplyLockState(); 
+                                    ApplyLockState();
                                 });
                             }
                             else
@@ -325,9 +322,9 @@ Content = mainContentGrid;
 
         public void Register_Click(object? sender, RoutedEventArgs e)
         {
-            string fullName = _loginNameTextBox.Text ?? "";
-            string email = _loginEmailTextBox.Text ?? "";
-            string contactNumber = _loginPasswordTextBox.Text ?? "";
+            string fullName = _loginNameTextBox?.Text ?? "";
+            string email = _loginEmailTextBox?.Text ?? "";
+            string contactNumber = _loginPasswordTextBox?.Text ?? "";
 
             if (string.IsNullOrWhiteSpace(fullName) || string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(contactNumber))
             {
@@ -340,7 +337,6 @@ Content = mainContentGrid;
                 using (var conn = DatabaseHelper.GetConnection())
                 {
                     conn.Open();
-                    // Check if email already exists
                     string checkQuery = $"SELECT COUNT(*) FROM {DatabaseHelper.ApplicantTable} WHERE Email = @Email";
                     using (var checkCmd = new MySqlCommand(checkQuery, conn))
                     {
@@ -352,7 +348,6 @@ Content = mainContentGrid;
                         }
                     }
 
-                    // Register new applicant (FullName can be updated later)
                     string insertQuery = $"INSERT INTO {DatabaseHelper.ApplicantTable} (FullName, Email, ContactNumber) VALUES (@FullName, @Email, @ContactNumber)";
                     using (var insertCmd = new MySqlCommand(insertQuery, conn))
                     {
@@ -362,7 +357,6 @@ Content = mainContentGrid;
                         insertCmd.ExecuteNonQuery();
                     }
                     ShowMessage("Registration Success", "Account created successfully! You can now log in.");
-                    // Automatically attempt to log in after registration
                     Login_Click(sender, e);
                 }
             }
@@ -373,24 +367,22 @@ Content = mainContentGrid;
         }
 
         private void LoadJobsIntoListBox()
-{
-    var jobRepo = new JobRepository();
-    var availableJobs = jobRepo.GetAllJobs();
-
-    _activeJobsList.Items.Clear();
-    cbJobs.Items.Clear();
-
-    foreach (var job in availableJobs)
-    {
-        // Changed from "Open" to "Active" to match your actual database schema strings
-        if (job.Status.Equals("Active", StringComparison.OrdinalIgnoreCase))
         {
-            _activeJobsList.Items.Add($"Job #{job.VacancyID}: {job.JobTitle} ({job.Department})");
-            cbJobs.Items.Add(job.JobTitle);
-        }
-    }
-}
+            var jobRepo = new JobRepository();
+            var availableJobs = jobRepo.GetAllJobs();
 
+            _activeJobsList!.Items.Clear();
+            cbJobs!.Items.Clear();
+
+            foreach (var job in availableJobs)
+            {
+                if (job.Status.Equals("Active", StringComparison.OrdinalIgnoreCase))
+                {
+                    _activeJobsList.Items.Add($"Job #{job.VacancyID}: {job.JobTitle} ({job.Department})");
+                    cbJobs.Items.Add(job.JobTitle);
+                }
+            }
+        }
 
         public void Submit_Click(object? sender, RoutedEventArgs e)
         {
@@ -400,7 +392,7 @@ Content = mainContentGrid;
                 return;
             }
 
-            string selectedJobTitle = cbJobs.SelectedItem as string ?? "";
+            string selectedJobTitle = cbJobs?.SelectedItem as string ?? "";
 
             if (string.IsNullOrEmpty(selectedJobTitle))
             {
@@ -414,7 +406,6 @@ Content = mainContentGrid;
                 {
                     conn.Open();
 
-                    // FIXED: Changed JobID to VacancyID to match database schema tracking duplication
                     string checkExistingAppQuery = $"SELECT COUNT(*) FROM {DatabaseHelper.ApplicationTable} WHERE ApplicantID = @ApplicantID AND VacancyID = @VacancyID";
                     using (var checkCmd = new MySqlCommand(checkExistingAppQuery, conn))
                     {
@@ -427,19 +418,18 @@ Content = mainContentGrid;
                         }
                     }
 
-                        int jobId = GetJobIdByTitle(selectedJobTitle);
+                    int jobId = GetJobIdByTitle(selectedJobTitle);
 
-                        // FIXED: Changed JobID column to VacancyID column to prevent the popup crash layout 
-                        string appSql = $"INSERT INTO {DatabaseHelper.ApplicationTable} (ApplicantID, VacancyID, Status) VALUES (@Aid, @Vid, 'Submitted')";
-                        using (var cmdApp = new MySqlCommand(appSql, conn))
-                        {
-                            cmdApp.Parameters.AddWithValue("@Aid", _loggedInApplicantId);
-                            cmdApp.Parameters.AddWithValue("@Vid", jobId);
-                            cmdApp.ExecuteNonQuery();
-                        }
+                    string appSql = $"INSERT INTO {DatabaseHelper.ApplicationTable} (ApplicantID, VacancyID, Status) VALUES (@Aid, @Vid, 'Submitted')";
+                    using (var cmdApp = new MySqlCommand(appSql, conn))
+                    {
+                        cmdApp.Parameters.AddWithValue("@Aid", _loggedInApplicantId);
+                        cmdApp.Parameters.AddWithValue("@Vid", jobId);
+                        cmdApp.ExecuteNonQuery();
+                    }
 
-                        ShowMessage("Success", "Application submitted! HR will review your profile shortly.");
-                        LoadMyApplications();
+                    ShowMessage("Success", "Application submitted! HR will review your profile shortly.");
+                    LoadMyApplications();
                 }
             }
             catch (Exception ex)
@@ -448,77 +438,71 @@ Content = mainContentGrid;
             }
         }
 
+        private void LoadMyApplications()
+        {
+            _myApplicationsList!.Items.Clear();
 
+            using (var conn = DatabaseHelper.GetConnection())
+            {
+                conn.Open();
 
-
-private void LoadMyApplications()
-{
-    _myApplicationsList.Items.Clear();
-
-    using (var conn = DatabaseHelper.GetConnection())
-    {
-        conn.Open();
-
-        string query = @"
+                string query = @"
             SELECT j.JobTitle, a.Status
             FROM Applications a
             INNER JOIN Job_Listings j ON a.VacancyID = j.VacancyID
             WHERE a.ApplicantID = @ApplicantID";
 
-        using (var cmd = new MySqlCommand(query, conn))
-        {
-            cmd.Parameters.AddWithValue("@ApplicantID", _loggedInApplicantId);
-
-            using (var reader = cmd.ExecuteReader())
-            {
-                while (reader.Read())
+                using (var cmd = new MySqlCommand(query, conn))
                 {
-                    string jobTitle = reader["JobTitle"].ToString() ?? "";
-                    string status = reader["Status"].ToString() ?? "";
+                    cmd.Parameters.AddWithValue("@ApplicantID", _loggedInApplicantId);
 
-                    // Gumawa ng TextBlock para sa detalye ng application
-                    var txtInfo = new TextBlock
+                    using (var reader = cmd.ExecuteReader())
                     {
-                        Text = $"{jobTitle} — {status}",
-                        Foreground = Brushes.White,
-                        FontWeight = FontWeight.SemiBold,
-                        VerticalAlignment = VerticalAlignment.Center
-                    };
+                        while (reader.Read())
+                        {
+                            string jobTitle = reader["JobTitle"].ToString() ?? "";
+                            string status = reader["Status"].ToString() ?? "";
 
-                    // Gumawa ng Border wrapper para sa Row Background Color
-                    var container = new Border
-                    {
-                        Padding = new Thickness(12, 8, 12, 8),
-                        CornerRadius = new CornerRadius(6),
-                        Margin = new Thickness(0, 2, 0, 2),
-                        Child = txtInfo
-                    };
+                            var txtInfo = new TextBlock
+                            {
+                                Text = $"{jobTitle} — {status}",
+                                Foreground = Brushes.White,
+                                FontWeight = FontWeight.SemiBold,
+                                VerticalAlignment = VerticalAlignment.Center
+                            };
 
-                    // LOGIC RULE: Kulay base sa Status ng Application
-                    if (status.Equals("Rejected", StringComparison.OrdinalIgnoreCase))
-                    {
-                        container.Background = new SolidColorBrush(Color.Parse("#DC2626")); // Soft Red
-                    }
-                    else if (status.Equals("Interview Scheduled", StringComparison.OrdinalIgnoreCase))
-                    {
-                        container.Background = new SolidColorBrush(Color.Parse("#2563EB")); // Soft Blue
-                    }
-                    else if (status.Equals("Accepted", StringComparison.OrdinalIgnoreCase))
-                    {
-                        container.Background = new SolidColorBrush(Color.Parse("#16A34A")); // Soft Green
-                    }
-                    else
-                    {
-                        container.Background = new SolidColorBrush(Color.Parse("#374151")); // Default Grey para sa 'Submitted'
-                    }
+                            var container = new Border
+                            {
+                                Padding = new Thickness(12, 8, 12, 8),
+                                CornerRadius = new CornerRadius(6),
+                                Margin = new Thickness(0, 2, 0, 2),
+                                Child = txtInfo
+                            };
 
-                    // I-add ang visual container mismo sa ListBox
-                    _myApplicationsList.Items.Add(container);
+                            if (status.Equals("Rejected", StringComparison.OrdinalIgnoreCase))
+                            {
+                                container.Background = new SolidColorBrush(Color.Parse("#DC2626"));
+                            }
+                            else if (status.Equals("Interview Scheduled", StringComparison.OrdinalIgnoreCase))
+                            {
+                                container.Background = new SolidColorBrush(Color.Parse("#2563EB"));
+                            }
+                            else if (status.Equals("Accepted", StringComparison.OrdinalIgnoreCase))
+                            {
+                                container.Background = new SolidColorBrush(Color.Parse("#16A34A"));
+                            }
+                            else
+                            {
+                                container.Background = new SolidColorBrush(Color.Parse("#374151"));
+                            }
+
+                            _myApplicationsList.Items.Add(container);
+                        }
+                    }
                 }
             }
         }
-    }
-}
+
         public void UpdateBio_Click(object? sender, RoutedEventArgs e)
         {
             if (_loggedInApplicantId == 0)
@@ -527,7 +511,7 @@ private void LoadMyApplications()
                 return;
             }
 
-            string newBio = _applicantBioTextBox.Text ?? string.Empty;
+            string newBio = _applicantBioTextBox?.Text ?? string.Empty;
 
             try
             {
@@ -552,7 +536,6 @@ private void LoadMyApplications()
             using (var conn = DatabaseHelper.GetConnection())
             {
                 conn.Open();
-                // FIXED: Changed JobID field query selector to VacancyID to match your structural tables
                 string query = $"SELECT VacancyID FROM {DatabaseHelper.JobTable} WHERE JobTitle = @JobTitle";
                 using (var cmd = new MySqlCommand(query, conn))
                 {
@@ -571,22 +554,21 @@ private void LoadMyApplications()
         }
 
         private void LoadClosedJobs()
-{
-    var jobRepo = new JobRepository();
-    var jobs = jobRepo.GetAllJobs();
-
-    _closedJobsList.Items.Clear();
-
-    foreach (var job in jobs)
-    {
-        // same lang din ung problem nung sa load active jobs, hanapin mo baka iba ung status sa database hindi "Closed"
-        if (job.Status.Equals("Closed", StringComparison.OrdinalIgnoreCase))
         {
-            _closedJobsList.Items.Add(
-                $"Job #{job.VacancyID}: {job.JobTitle} ({job.Department})");
+            var jobRepo = new JobRepository();
+            var jobs = jobRepo.GetAllJobs();
+
+            _closedJobsList!.Items.Clear();
+
+            foreach (var job in jobs)
+            {
+                if (job.Status.Equals("Closed", StringComparison.OrdinalIgnoreCase))
+                {
+                    _closedJobsList.Items.Add(
+                        $"Job #{job.VacancyID}: {job.JobTitle} ({job.Department})");
+                }
+            }
         }
-    }
-}
 
         private async void ShowMessage(string title, string message)
         {
@@ -596,40 +578,38 @@ private void LoadMyApplications()
                 await dialog.ShowDialog(this);
             });
         }
-    
 
-    private bool IsApplicationLocked()
-{
-    using (var conn = DatabaseHelper.GetConnection())
-    {
-        conn.Open();
+        private bool IsApplicationLocked()
+        {
+            using (var conn = DatabaseHelper.GetConnection())
+            {
+                conn.Open();
 
-        string query = @"
+                string query = @"
             SELECT COUNT(*)
             FROM Applications
             WHERE ApplicantID = @ApplicantID
             AND Status IN ('Locked', 'Interview Scheduled', 'Accepted', 'Rejected')";
 
-        using (var cmd = new MySqlCommand(query, conn))
-        {
-            cmd.Parameters.AddWithValue("@ApplicantID", _loggedInApplicantId);
+                using (var cmd = new MySqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@ApplicantID", _loggedInApplicantId);
 
-            return Convert.ToInt32(cmd.ExecuteScalar()) > 0;
+                    return Convert.ToInt32(cmd.ExecuteScalar()) > 0;
+                }
+            }
+        }
+
+        private void ApplyLockState()
+        {
+            bool locked = IsApplicationLocked();
+
+            txtFullName!.IsReadOnly = locked;
+            txtEmail!.IsReadOnly = locked;
+            txtContact!.IsReadOnly = locked;
+            _applicantBioTextBox!.IsReadOnly = locked;
+
+            cbJobs!.IsEnabled = !locked;
         }
     }
 }
-
-    private void ApplyLockState()
-{
-    bool locked = IsApplicationLocked();
-
-    txtFullName.IsReadOnly = locked;
-    txtEmail.IsReadOnly = locked;
-    txtContact.IsReadOnly = locked;
-    _applicantBioTextBox.IsReadOnly = locked;
-
-    cbJobs.IsEnabled = !locked;
-}
-}
-}
-
