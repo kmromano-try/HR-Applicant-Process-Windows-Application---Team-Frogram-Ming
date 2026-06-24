@@ -67,5 +67,28 @@ namespace HR_Applicant_System.Models
                 return false;
             }
         }
+
+        // MASTER FIX: Complete self-contained deletion backend processor
+        public bool DeleteJob(int vacancyId)
+        {
+            try
+            {
+                using (var conn = DatabaseHelper.GetConnection())
+                {
+                    conn.Open();
+                    string query = $"DELETE FROM {DatabaseHelper.JobTable} WHERE VacancyID = @Id";
+                    using (var cmd = new MySqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@Id", vacancyId);
+                        return cmd.ExecuteNonQuery() > 0;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error deleting job: {ex.Message}");
+                return false;
+            }
+        }
     }
 }

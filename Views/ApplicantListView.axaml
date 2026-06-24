@@ -1,79 +1,141 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:views="clr-namespace:HR_Applicant_System.Views"
-             xmlns:vm="using:HR_Applicant_System.ViewModels"
-             xmlns:models="using:HR_Applicant_System.Models"
-             mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="600"
+             xmlns:vm="clr-namespace:HR_Applicant_System.ViewModels"
              x:Class="HR_Applicant_System.Views.ApplicantListView"
              x:DataType="vm:ApplicantListViewModel">
 
-    <Grid ColumnDefinitions="240, *">
-        
-        <Border Grid.Column="0" Background="#1E1E24" BorderBrush="#333333" BorderThickness="0,0,1,0">
-            <Grid RowDefinitions="Auto, *, Auto" Margin="15">
-                <StackPanel Grid.Row="0" Spacing="5" Margin="0,10,0,30">
-                    <TextBlock Text="HR SYSTEMS" FontSize="18" FontWeight="Bold" Foreground="#10B981"/>
-                    <TextBlock Text="Capstone Workspace" FontSize="11" Foreground="Gray"/>
-                </StackPanel>
-
-                <StackPanel Grid.Row="1" Spacing="10">
-                    <Button Content="Dashboard Pipeline" 
-                            HorizontalAlignment="Stretch" 
-                            HorizontalContentAlignment="Left"
-                            Background="#2D2D34" 
-                            Foreground="White" 
-                            Padding="12,10"/>
-                    <Button Content="Applications Queue" 
-                            HorizontalAlignment="Stretch" 
-                            HorizontalContentAlignment="Left"
-                            Background="Transparent" 
-                            Foreground="LightGray" 
-                            Padding="12,10"/>
-                </StackPanel>
-
-                <TextBlock Grid.Row="2" Text="v1.0.0 Stable" FontSize="10" Foreground="DimGray" HorizontalAlignment="Center"/>
+    <Grid ColumnDefinitions="4*, 5*">
+        <!-- LEFT SIDE: Dynamic Master Pipeline List -->
+        <Border Grid.Column="0" Background="#1a1a1a" CornerRadius="8" Padding="10" Margin="0,0,10,0">
+            <Grid RowDefinitions="Auto, *">
+                <TextBox Grid.Row="0" PlaceholderText="Search candidates or positions..." 
+                         Text="{Binding SearchText, Mode=TwoWay}" Margin="0,0,0,10"
+                         Background="#2d2d2d" Foreground="White" BorderThickness="1" BorderBrush="#3d3d3d"/>
+                
+                <ListBox Grid.Row="1" ItemsSource="{Binding FilteredApplicants}" 
+                         SelectedItem="{Binding SelectedApplicant, Mode=TwoWay}"
+                         Background="Transparent" BorderThickness="0">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Border Background="#262626" CornerRadius="6" Padding="15" Margin="0,4">
+                                <Grid ColumnDefinitions="*, Auto">
+                                    <StackPanel Grid.Column="0" Spacing="4">
+                                        <TextBlock Text="{Binding Name}" FontWeight="Bold" FontSize="16" Foreground="White"/>
+                                        <TextBlock Text="{Binding Position}" FontSize="13" Foreground="#aaaaaa"/>
+                                    </StackPanel>
+                                    <Border Grid.Column="1" Background="#332701" BorderBrush="#FFB300" BorderThickness="1" CornerRadius="4" Padding="8,4" VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding Status}" Foreground="#FFB300" FontSize="11" FontWeight="SemiBold"/>
+                                    </Border>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
             </Grid>
         </Border>
 
-        <Grid Grid.Column="1" RowDefinitions="Auto, *, Auto" Margin="20">
-            
-            <Grid Grid.Row="0" ColumnDefinitions="*, Auto" Margin="0,0,0,20">
-                <StackPanel Grid.Column="0">
-                    <TextBlock Text="Applicant Evaluation Pipeline" FontSize="20" FontWeight="Bold" Foreground="#FFFFFF"/>
-                    <TextBlock Text="Live tracking records connected to hr_applicant_system" FontSize="12" Foreground="#10B981"/>
-                </StackPanel>
-                
-                <Button Grid.Column="1"
-                        Content="Sync Workspace Data"
-                        Command="{Binding RefreshDashboard}"
-                        Background="#198754"
-                        Foreground="White"
-                        Padding="12,8"
-                        FontWeight="SemiBold"/>
-            </Grid>
-            
-            <ListBox Grid.Row="1" 
-                     ItemsSource="{Binding FilteredApplicants}" 
-                     SelectedItem="{Binding SelectedApplicant}"
-                     Name="applicantList">
-                <ListBox.ItemTemplate>
-                    <DataTemplate x:DataType="models:Application">
-                        <Border BorderBrush="#333333" BorderThickness="1" CornerRadius="4" Padding="10" Margin="0,2">
-                            <Grid ColumnDefinitions="*, Auto">
-                                <StackPanel Grid.Column="0" Spacing="5">
-                                    <TextBlock Text="{Binding Name}" FontWeight="Bold" FontSize="14" Foreground="White"/>
-                                    <TextBlock Text="{Binding Position}" Foreground="LightGray" FontSize="12"/>
-                                </StackPanel>
-                                <TextBlock Grid.Column="1" Text="{Binding Status}" 
-                                           Foreground="#FFB300" VerticalAlignment="Center" FontWeight="Bold"/>
+        <!-- RIGHT SIDE: Inline Screening Details & Interview Scheduling Toolkit -->
+        <Border Grid.Column="1" Background="#1a1a1a" CornerRadius="8" Padding="20" Margin="10,0,0,0">
+            <ScrollViewer>
+                <StackPanel Spacing="18" IsVisible="{Binding SelectedApplicant, Converter={x:Static ObjectConverters.IsNotNull}}">
+                    
+                    <!-- Candidate Header Info -->
+                    <StackPanel Spacing="2">
+                        <TextBlock Text="Evaluation Details" FontSize="12" Foreground="#60a5fa" FontWeight="Bold"/>
+                        <TextBlock Text="{Binding SelectedApplicant.Name}" FontSize="24" FontWeight="Bold" Foreground="White"/>
+                        <TextBlock Text="{Binding SelectedApplicant.Position}" FontSize="14" Foreground="#9ca3af"/>
+                    </StackPanel>
+                    
+                    <Separator Background="#2d2d2d" Height="1"/>
+
+                    <!-- Candidate Contact Profile Card -->
+                    <Border Background="#262626" CornerRadius="6" Padding="15">
+                        <StackPanel Spacing="10">
+                            <TextBlock Text="📋 Candidate Contact Profile" FontWeight="Bold" Foreground="#60a5fa" FontSize="14"/>
+                            
+                            <Grid ColumnDefinitions="Auto, *" RowDefinitions="Auto, Auto" Margin="5,0,0,0">
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="Email:   " Foreground="#aaaaaa" FontSize="13"/>
+                                <!-- FIX: Changed to SelectableTextBlock to allow copying -->
+                                <SelectableTextBlock Grid.Row="0" Grid.Column="1" Text="{Binding SelectedApplicant.Email}" Foreground="White" FontSize="13"/>
+                                
+                                <TextBlock Grid.Row="1" Grid.Column="0" Text="Phone:   " Foreground="#aaaaaa" FontSize="13" Margin="0,6,0,0"/>
+                                <!-- FIX: Changed to SelectableTextBlock to allow copying -->
+                                <SelectableTextBlock Grid.Row="1" Grid.Column="1" Text="{Binding SelectedApplicant.ContactNumber}" Foreground="White" FontSize="13" Margin="0,6,0,0"/>
                             </Grid>
-                        </Border>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
-            
-        </Grid>
+                            
+                            <Separator Background="#3d3d3d" Height="1" Margin="0,5"/>
+                            
+                            <!-- Profile Background Details -->
+                            <TextBlock Text="Biography / Background Summary" FontSize="11" Foreground="#aaaaaa" FontWeight="SemiBold"/>
+                            <!-- FIX: Wrapped in Border to handle background rendering cleanly -->
+                            <Border Background="#1a1a1a" Padding="10" CornerRadius="4">
+                                <TextBlock Text="{Binding SelectedApplicant.Bio}" Foreground="White" FontSize="13" TextWrapping="Wrap"/>
+                            </Border>
+
+                            <TextBlock Text="Professional Work Experience" FontSize="11" Foreground="#aaaaaa" FontWeight="SemiBold" Margin="0,5,0,0"/>
+                            <!-- FIX: Wrapped in Border to handle background rendering cleanly -->
+                            <Border Background="#1a1a1a" Padding="10" CornerRadius="4">
+                                <TextBlock Text="{Binding SelectedApplicant.Experience}" Foreground="White" FontSize="13" TextWrapping="Wrap"/>
+                            </Border>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Attached Documents Viewer Card -->
+                    <Border Background="#262626" CornerRadius="6" Padding="15">
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="📁 Uploaded Screening Attachments" FontWeight="Bold" Foreground="#10b981" FontSize="14"/>
+                            <Grid ColumnDefinitions="*, Auto" Margin="5,5,0,0">
+                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Spacing="2">
+                                    <TextBlock Text="📄 Primary Resume / CV Document" FontSize="12" Foreground="White" FontWeight="Medium"/>
+                                    <TextBlock Text="{Binding SelectedApplicant.ResumeFilePath}" FontSize="11" Foreground="#888888" TextTrimming="CharacterEllipsis"/>
+                                </StackPanel>
+                                <Button Grid.Column="1" Content="Launch Viewer" Click="OpenResume_Click" Background="#3b82f6" Foreground="White" FontWeight="SemiBold" Padding="12,6" CornerRadius="4"/>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Staff Screening Comments Entry -->
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="Staff Screening Feedback / Remarks" FontSize="12" FontWeight="SemiBold" Foreground="#9ca3af"/>
+                        <TextBox Text="{Binding SelectedApplicant.HRRemarks, Mode=TwoWay}" Height="100" 
+                                 TextWrapping="Wrap" AcceptsReturn="True" Background="#262626" Foreground="White" 
+                                 BorderBrush="#3d3d3d"/>
+                    </StackPanel>
+
+                    <!-- Embedded Interview Scheduling Fields -->
+                    <Border Background="#22252a" BorderBrush="#3b82f6" BorderThickness="1" CornerRadius="6" Padding="15">
+                        <StackPanel Spacing="10">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <TextBlock Text="🗓️" FontSize="16"/>
+                                <TextBlock Text="Interview Schedule Manager" FontWeight="Bold" Foreground="#60a5fa" FontSize="14"/>
+                            </StackPanel>
+                            
+                            <Grid ColumnDefinitions="*, *">
+                                <StackPanel Grid.Column="0" Margin="0,0,5,0" Spacing="4">
+                                    <TextBlock Text="Date (YYYY-MM-DD)" FontSize="11" Foreground="#9ca3af"/>
+                                    <TextBox Name="txtInterviewDate" PlaceholderText="e.g., 2026-07-15" Background="#1a1a1a"/>
+                                </StackPanel>
+                                <StackPanel Grid.Column="1" Margin="5,0,0,0" Spacing="4">
+                                    <TextBlock Text="Time Window" FontSize="11" Foreground="#9ca3af"/>
+                                    <TextBox Name="txtInterviewTime" PlaceholderText="e.g., 2:00 PM" Background="#1a1a1a"/>
+                                </StackPanel>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Pipeline Submission Controls -->
+                    <Grid ColumnDefinitions="*, *" Margin="0,10,0,0">
+                        <Button Grid.Column="0" Content="Drop / Reject" Background="#dc2626" Foreground="White" 
+                                FontWeight="Bold" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" 
+                                Padding="12" Margin="0,0,5,0" Click="Reject_Click"/>
+                                
+                        <Button Grid.Column="1" Content="Route to Final Review Queue" Background="#10B981" Foreground="White" 
+                                FontWeight="Bold" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" 
+                                Padding="12" Margin="5,0,0,0" Click="RouteToFinal_Click"/>
+                    </Grid>
+                    
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
     </Grid>
 </UserControl>

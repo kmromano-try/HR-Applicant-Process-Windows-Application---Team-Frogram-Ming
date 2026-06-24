@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Linq;
 using HR_Applicant_System.Models;
 
 namespace HR_Applicant_System.ViewModels
@@ -16,6 +17,7 @@ namespace HR_Applicant_System.ViewModels
         private string _searchText = string.Empty;
         private string _fullName = string.Empty;
         private string _bio = string.Empty;
+        private string _currentStatusFilter = "Submitted"; // Default view state
         private int _pendingCount;
         private int _vacantCount;
         private int _reviewedCount;
@@ -42,14 +44,26 @@ namespace HR_Applicant_System.ViewModels
         }
 
         public Application? SelectedApplicant
+{
+    get => _selectedApplicant;
+    set
+    {
+        _selectedApplicant = value;
+        OnPropertyChanged();
+        
+        // FIX: Sync individual details when selection changes
+        if (_selectedApplicant != null)
         {
-            get => _selectedApplicant;
-            set
-            {
-                _selectedApplicant = value;
-                OnPropertyChanged();
-            }
+            FullName = _selectedApplicant.Name;
+            Bio = _selectedApplicant.HRRemarks; // Assuming Bio displays current remarks
         }
+        else
+        {
+            FullName = string.Empty;
+            Bio = string.Empty;
+        }
+    }
+}
 
         public string SearchText
         {
@@ -126,18 +140,40 @@ namespace HR_Applicant_System.ViewModels
 
         public void RefreshDashboard()
         {
+            RefreshDashboardWithFilter(_currentStatusFilter);
+        }
+
+        public void RefreshDashboardWithFilter(string statusTarget)
+        {
             try
             {
-                Console.WriteLine("[DASHBOARD] Fetching applications from the database...");
+                _currentStatusFilter = statusTarget;
+                Console.WriteLine($"[DASHBOARD] Fetching applications filtered by view state: {statusTarget}...");
                 var records = _repo.GetAllActiveApplications();
                 
                 if (records != null)
                 {
                     Console.WriteLine($"[DASHBOARD] Successfully read {records.Count} total rows from database.");
                     
-                    var staffReviewOnly = records.FindAll(a => a.Status != "For Final Review");
-                    Applicants = new ObservableCollection<Application>(staffReviewOnly);
-                    
+                    List<Application> filteredState;
+
+                    if (statusTarget == "Submitted")
+                    {
+                        // Main Dashboard Pipeline View: Strictly exclude final states (Accepted, Rejected, For Final Review)
+                        filteredState = records.Where(a => a.Status == "Submitted" || a.Status == "Under Review").ToList();
+                    }
+                    else if (statusTarget == "Passed Screening")
+                    {
+                        // Maps both potential variants safely for the final evaluation queue lists
+                        filteredState = records.Where(a => a.Status == "Passed Screening" || a.Status == "For Final Review").ToList();
+                    }
+                    else
+                    {
+                        // Fallback matching for explicit states like "Rejected" or "Accepted"
+                        filteredState = records.Where(a => a.Status.Equals(statusTarget, StringComparison.OrdinalIgnoreCase)).ToList();
+                    }
+
+                    Applicants = new ObservableCollection<Application>(filteredState);
                     UpdateMetrics(records);
                     Console.WriteLine($"[DASHBOARD] Pipeline tracking collection populated with {Applicants.Count} active apps.");
                 }
@@ -146,7 +182,6 @@ namespace HR_Applicant_System.ViewModels
             {
                 Console.WriteLine($"\n[CRITICAL DASHBOARD ERROR] The dashboard loading sequence crashed!");
                 Console.WriteLine($"Error Message: {ex.Message}");
-                Console.WriteLine($"Stack Trace:\n{ex.StackTrace}\n");
             }
         }
 
@@ -177,11 +212,11 @@ namespace HR_Applicant_System.ViewModels
 
             foreach (var app in allRecords)
             {
-                if (app.Status == "Pending" || app.Status == "Under Review")
+                if (app.Status == "Pending" || app.Status == "Submitted" || app.Status == "Under Review")
                 {
                     pending++;
                 }
-                else if (app.Status == "Hired" || app.Status == "Rejected" || app.Status == "For Final Review")
+                else if (app.Status == "Hired" || app.Status == "Accepted" || app.Status == "Rejected" || app.Status == "For Final Review" || app.Status == "Passed Screening")
                 {
                     reviewed++;
                 }

@@ -9,19 +9,46 @@ namespace HR_Applicant_System.Views
 {
     public partial class FinalReviewView : Window
     {
-        private ApplicantListView? _applicantList;
-
         public FinalReviewView()
         {
             InitializeComponent();
             SetupEvents();
+            LoadPendingCandidates();
         }
 
-        public FinalReviewView(ApplicantListView parentList)
+        private void LoadPendingCandidates()
         {
-            InitializeComponent();
-            this._applicantList = parentList;
-            SetupEvents();
+            try
+            {
+                using (var conn = DatabaseHelper.GetConnection())
+                {
+                    conn.Open();
+                    string query = $@"SELECT a.ApplicationID, ap.FullName, j.JobTitle 
+                                     FROM {DatabaseHelper.ApplicationTable} a
+                                     JOIN {DatabaseHelper.ApplicantTable} ap ON a.ApplicantID = ap.ApplicantID
+                                     JOIN {DatabaseHelper.JobTable} j ON a.VacancyID = j.VacancyID
+                                     WHERE a.Status = 'For Final Review'";
+
+                    using (var cmd = new MySqlCommand(query, conn))
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        lstPendingCandidates.Items.Clear();
+                        while (reader.Read())
+                        {
+                            var item = new ListBoxItem 
+                            { 
+                                Content = $"{reader["FullName"]} — {reader["JobTitle"]}", 
+                                Tag = reader["ApplicationID"] 
+                            };
+                            lstPendingCandidates.Items.Add(item);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex) 
+            { 
+                ShowMessage("Database Error: " + ex.Message); 
+            }
         }
 
         private void SetupEvents()
@@ -35,21 +62,24 @@ namespace HR_Applicant_System.Views
 
         private void ExecuteDecision(string status)
         {
-            string remarks = txtFinalRemarks?.Text ?? "";
-            if (string.IsNullOrWhiteSpace(remarks))
+            if (lstPendingCandidates.SelectedItem is ListBoxItem selected && selected.Tag is int appId)
             {
-                ShowMessage("Please enter final decision remarks.");
-                return;
-            }
-
-            try
-            {
-                ShowMessage($"Candidate status updated to {status} successfully.");
+                // Fully qualified reference used here to resolve ambiguity
+                var app = new HR_Applicant_System.Models.Application 
+                { 
+                    Id = appId, 
+                    Status = status, 
+                    HRRemarks = txtFinalRemarks.Text ?? "" 
+                };
+                
+                new ApplicationRepository().UpdateApplicationStatus(app, app.HRRemarks);
+                
+                ShowMessage($"Status updated to {status}.");
                 this.Close();
             }
-            catch (Exception ex)
-            {
-                ShowMessage("Error: " + ex.Message);
+            else 
+            { 
+                ShowMessage("Please select a candidate from the list first."); 
             }
         }
 
@@ -57,22 +87,20 @@ namespace HR_Applicant_System.Views
         {
             Avalonia.Threading.Dispatcher.UIThread.Post(() =>
             {
-                Window dialog = new Window 
+                var dialog = new Window 
                 { 
                     Width = 380, 
                     Height = 150, 
                     Title = "Notification", 
-                    WindowStartupLocation = WindowStartupLocation.CenterOwner, 
                     Content = new TextBlock 
                     { 
                         Text = message, 
                         Margin = new Thickness(20), 
-                        TextWrapping = Avalonia.Media.TextWrapping.Wrap, 
-                        VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, 
-                        HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center 
+                        TextWrapping = Avalonia.Media.TextWrapping.Wrap 
                     } 
                 };
-                dialog.ShowDialog(this);
+                // Used Show() instead of ShowDialog(this) to prevent crash on window close
+                dialog.Show(); 
             });
         }
     }

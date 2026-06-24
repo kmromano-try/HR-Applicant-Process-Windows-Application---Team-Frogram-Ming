@@ -50,8 +50,14 @@ namespace HR_Applicant_System.Views
         private string _loggedInApplicantEmail = string.Empty;
         private string _loggedInApplicantFullName = string.Empty;
 
+        // FIX: Parameterless constructor added to resolve Avalonia warning AVLN3001
+        public ApplicantView() : this(0)
+        {
+        }
+
         public ApplicantView(int applicantId)
         {
+            InitializeComponent();
             _loggedInApplicantId = applicantId;
            
             Width = 600;
@@ -111,7 +117,7 @@ namespace HR_Applicant_System.Views
             };
 
             // --- Profile Tab Setup ---
-            txtFullName = new TextBox { IsReadOnly = true };
+            txtFullName = new TextBox { IsReadOnly = false };
             txtEmail = new TextBox { IsReadOnly = true };
             txtContact = new TextBox();
             txtAddress = new TextBox();
@@ -132,7 +138,7 @@ namespace HR_Applicant_System.Views
             {
                 Content = new StackPanel
                 {
-                    Spacing = 10, Margin = new Thickness(10), // Fixed: Padding is not supported on StackPanel, switched to Margin
+                    Spacing = 10, Margin = new Thickness(10), 
                     Children =
                     {
                         new TextBlock { Text = "My Personal Information", FontSize = 18, FontWeight = FontWeight.Bold, Foreground = Brushes.White },
@@ -167,7 +173,7 @@ namespace HR_Applicant_System.Views
 
             StackPanel vacanciesPanel = new StackPanel
             {
-                Spacing = 10, Margin = new Thickness(15), // Fixed: Switched from Padding to Margin
+                Spacing = 10, Margin = new Thickness(15), 
                 Children =
                 {
                     new TextBlock { Text = "Open Job Vacancies", FontSize = 20, FontWeight = FontWeight.Bold, Foreground = Brushes.White },
@@ -201,7 +207,7 @@ namespace HR_Applicant_System.Views
 
             StackPanel documentsPanel = new StackPanel
             {
-                Spacing = 12, Margin = new Thickness(15), // Fixed: Switched from Padding to Margin
+                Spacing = 12, Margin = new Thickness(15), 
                 Children =
                 {
                     new TextBlock { Text = "Document Tracking Center", FontSize = 20, FontWeight = FontWeight.Bold, Foreground = Brushes.White },
@@ -374,31 +380,33 @@ namespace HR_Applicant_System.Views
         }
 
         private void UpdateProfile_Click(object? sender, RoutedEventArgs e)
-        {
-            if (IsApplicationLocked()) { ShowMessage("Action Locked", "Changes disabled. Your operational profile is under HR evaluation pipeline review."); return; }
+{
+    if (IsApplicationLocked()) { ShowMessage("Action Locked", "Changes disabled."); return; }
 
-            try
+    try
+    {
+        using (var conn = DatabaseHelper.GetConnection())
+        {
+            conn.Open();
+            // ADDED: FullName=@Name to the query
+            string query = $"UPDATE {DatabaseHelper.ApplicantTable} SET FullName=@Name, ContactNumber=@Contact, Address=@Address, Bio=@Bio, Education=@Edu, Skills=@Skills, WorkExperience=@Work WHERE ApplicantID=@Id";
+            using (var cmd = new MySqlCommand(query, conn))
             {
-                using (var conn = DatabaseHelper.GetConnection())
-                {
-                    conn.Open();
-                    string query = $"UPDATE {DatabaseHelper.ApplicantTable} SET ContactNumber=@Contact, Address=@Address, Bio=@Bio, Education=@Edu, Skills=@Skills, WorkExperience=@Work WHERE ApplicantID=@Id";
-                    using (var cmd = new MySqlCommand(query, conn))
-                    {
-                        cmd.Parameters.AddWithValue("@Contact", txtContact.Text ?? "");
-                        cmd.Parameters.AddWithValue("@Address", txtAddress.Text ?? "");
-                        cmd.Parameters.AddWithValue("@Bio", _applicantBioTextBox.Text ?? "");
-                        cmd.Parameters.AddWithValue("@Edu", txtEducation.Text ?? "");
-                        cmd.Parameters.AddWithValue("@Skills", txtSkills.Text ?? "");
-                        cmd.Parameters.AddWithValue("@Work", txtWorkExperience.Text ?? "");
-                        cmd.Parameters.AddWithValue("@Id", _loggedInApplicantId);
-                        cmd.ExecuteNonQuery();
-                    }
-                    ShowMessage("Success", "Profile layout structural data synchronized completely.");
-                }
+                cmd.Parameters.AddWithValue("@Name", txtFullName.Text ?? ""); // ADDED parameter
+                cmd.Parameters.AddWithValue("@Contact", txtContact.Text ?? "");
+                cmd.Parameters.AddWithValue("@Address", txtAddress.Text ?? "");
+                cmd.Parameters.AddWithValue("@Bio", _applicantBioTextBox.Text ?? "");
+                cmd.Parameters.AddWithValue("@Edu", txtEducation.Text ?? "");
+                cmd.Parameters.AddWithValue("@Skills", txtSkills.Text ?? "");
+                cmd.Parameters.AddWithValue("@Work", txtWorkExperience.Text ?? "");
+                cmd.Parameters.AddWithValue("@Id", _loggedInApplicantId);
+                cmd.ExecuteNonQuery();
             }
-            catch (Exception ex) { ShowMessage("Write Fail", ex.Message); }
+            ShowMessage("Success", "Profile data synchronized.");
         }
+    }
+    catch (Exception ex) { ShowMessage("Write Fail", ex.Message); }
+}
 
         private void ChangePassword_Click(object? sender, RoutedEventArgs e)
         {
@@ -448,6 +456,25 @@ namespace HR_Applicant_System.Views
             }
         }
 
+        private int GetJobIdByTitle(string title)
+        {
+            try
+            {
+                using (var conn = DatabaseHelper.GetConnection())
+                {
+                    conn.Open();
+                    string query = $"SELECT VacancyID FROM {DatabaseHelper.JobTable} WHERE JobTitle = @Title LIMIT 1";
+                    using (var cmd = new MySqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@Title", title);
+                        var obj = cmd.ExecuteScalar();
+                        return obj != null ? Convert.ToInt32(obj) : 0;
+                    }
+                }
+            }
+            catch { return 0; }
+        }
+
         private void CreateDraft_Click(object? sender, RoutedEventArgs e)
         {
             string selectedJobTitle = cbJobs.SelectedItem as string ?? "";
@@ -460,7 +487,7 @@ namespace HR_Applicant_System.Views
                 using (var conn = DatabaseHelper.GetConnection())
                 {
                     conn.Open();
-                    string checkQuery = "SELECT COUNT(*) FROM Applications WHERE ApplicantID=@Aid AND VacancyID=@Vid";
+                    string checkQuery = $"SELECT COUNT(*) FROM {DatabaseHelper.ApplicationTable} WHERE ApplicantID=@Aid AND VacancyID=@Vid";
                     using (var cCmd = new MySqlCommand(checkQuery, conn))
                     {
                         cCmd.Parameters.AddWithValue("@Aid", _loggedInApplicantId);
@@ -468,7 +495,7 @@ namespace HR_Applicant_System.Views
                         if (Convert.ToInt32(cCmd.ExecuteScalar()) > 0) { ShowMessage("Duplicate Warning", "An open deployment registry record already covers this workspace."); return; }
                     }
 
-                    string insertQuery = "INSERT INTO Applications (ApplicantID, VacancyID, Status) VALUES (@Aid, @Vid, 'Draft')";
+                    string insertQuery = $"INSERT INTO {DatabaseHelper.ApplicationTable} (ApplicantID, VacancyID, Status) VALUES (@Aid, @Vid, 'Draft')";
                     using (var iCmd = new MySqlCommand(insertQuery, conn))
                     {
                         iCmd.Parameters.AddWithValue("@Aid", _loggedInApplicantId);
@@ -489,7 +516,7 @@ namespace HR_Applicant_System.Views
             using (var conn = DatabaseHelper.GetConnection())
             {
                 conn.Open();
-                string query = "SELECT a.ApplicationID, j.JobTitle, a.Status, a.StaffFeedback FROM Applications a INNER JOIN Job_Listings j ON a.VacancyID = j.VacancyID WHERE a.ApplicantID = @Id";
+                string query = $"SELECT a.ApplicationID, j.JobTitle, a.Status, a.StaffFeedback FROM {DatabaseHelper.ApplicationTable} a INNER JOIN {DatabaseHelper.JobTable} j ON a.VacancyID = j.VacancyID WHERE a.ApplicantID = @Id";
                 using (var cmd = new MySqlCommand(query, conn))
                 {
                     cmd.Parameters.AddWithValue("@Id", _loggedInApplicantId);
@@ -539,7 +566,7 @@ namespace HR_Applicant_System.Views
                     using (var conn = DatabaseHelper.GetConnection())
                     {
                         conn.Open();
-                        string query = "UPDATE Applications SET Status='Submitted' WHERE ApplicationID=@Id";
+                        string query = $"UPDATE {DatabaseHelper.ApplicationTable} SET Status='Submitted' WHERE ApplicationID=@Id";
                         using (var cmd = new MySqlCommand(query, conn))
                         {
                             cmd.Parameters.AddWithValue("@Id", appId);
@@ -554,21 +581,41 @@ namespace HR_Applicant_System.Views
             }
         }
 
-        // Fixed: Updated to use the secure, asynchronous Avalonia v11 StorageProvider framework
         private async System.Threading.Tasks.Task<string?> BrowseFileAsync()
+{
+    var topLevel = TopLevel.GetTopLevel(this);
+    if (topLevel == null) return null;
+
+    // By removing the FileTypeFilter property, the picker will default 
+    // to showing all files in the directory without graying anything out.
+    var files = await topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+    {
+        Title = "Select Registry Attachment File Source",
+        AllowMultiple = false
+        // REMOVED: FileTypeFilter
+    });
+
+    if (files.Count > 0)
+    {
+        string selectedPath = files[0].Path.LocalPath;
+        
+        // Manual Validation (Check here instead of the picker filter)
+        string ext = System.IO.Path.GetExtension(selectedPath).ToLower();
+        if (ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".pdf" || ext == ".docx")
         {
-            var topLevel = TopLevel.GetTopLevel(this);
-            if (topLevel == null) return null;
-
-            var files = await topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
-            {
-                Title = "Select Registry Attachment File Source",
-                AllowMultiple = false
-            });
-
-            return files.Count > 0 ? files[0].Path.LocalPath : null;
+            return selectedPath;
         }
+        else
+        {
+            ShowMessage("Unsupported Format", "Please select a valid image or document file.");
+            return null;
+        }
+    }
+    
+    return null;
+}
 
+        // FIX: Missing logic finished completely, and auto-syncs the chosen file path straight to applicants table column 
         private void SaveDocPath(string type, string path)
         {
             try
@@ -584,11 +631,54 @@ namespace HR_Applicant_System.Views
                         cmd.Parameters.AddWithValue("@Path", path);
                         cmd.ExecuteNonQuery();
                     }
-                    CheckDocumentStatusRegistry();
+
+                    // MASTER FIX: Synchronize the path directly to the applicant profile table row automatically!
+                    if (type.Equals("Resume", StringComparison.OrdinalIgnoreCase))
+                    {
+                        string syncQuery = $"UPDATE {DatabaseHelper.ApplicantTable} SET ResumeFilePath = @Path WHERE ApplicantID = @Aid";
+                        using (var syncCmd = new MySqlCommand(syncQuery, conn))
+                        {
+                            syncCmd.Parameters.AddWithValue("@Path", path);
+                            syncCmd.Parameters.AddWithValue("@Aid", _loggedInApplicantId);
+                            syncCmd.ExecuteNonQuery();
+                        }
+                    }
+
+                    ShowMessage("Document Uploaded", $"{type} path synchronized to profile registry entry.");
                 }
             }
-            catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex.Message); }
+            catch (Exception ex) { ShowMessage("Upload Logging Error", ex.Message); }
         }
+
+        private void LaunchViewer_Click(object sender, RoutedEventArgs e)
+{
+    // The ?? "" ensures that if Text is null, it passes an empty string instead
+    OpenDocument(txtResumePath.Text ?? "");
+}
+
+        private void OpenDocument(string filePath)
+{
+    try
+    {
+        if (string.IsNullOrWhiteSpace(filePath) || !System.IO.File.Exists(filePath))
+        {
+            ShowMessage("File Error", "The file path is empty or the file no longer exists on this device.");
+            return;
+        }
+
+        var processInfo = new System.Diagnostics.ProcessStartInfo
+        {
+            FileName = filePath,
+            UseShellExecute = true // This is required for macOS to open the default viewer (Preview/Word/Acrobat)
+        };
+        
+        System.Diagnostics.Process.Start(processInfo);
+    }
+    catch (Exception ex)
+    {
+        ShowMessage("Launch Error", $"Failed to open file: {ex.Message}");
+    }
+}
 
         private void LoadSavedDocumentPaths()
         {
@@ -597,68 +687,40 @@ namespace HR_Applicant_System.Views
                 using (var conn = DatabaseHelper.GetConnection())
                 {
                     conn.Open();
-                    string query = "SELECT DocumentType, FilePath FROM ApplicantDocuments WHERE ApplicantID=@Id";
+                    string query = "SELECT DocumentType, FilePath FROM ApplicantDocuments WHERE ApplicantID = @Aid";
                     using (var cmd = new MySqlCommand(query, conn))
                     {
-                        cmd.Parameters.AddWithValue("@Id", _loggedInApplicantId);
+                        cmd.Parameters.AddWithValue("@Aid", _loggedInApplicantId);
                         using (var reader = cmd.ExecuteReader())
                         {
                             while (reader.Read())
                             {
-                                string type = reader["DocumentType"].ToString() ?? "";
+                                string docType = reader["DocumentType"].ToString() ?? "";
                                 string path = reader["FilePath"].ToString() ?? "";
-                                if (type == "Resume") txtResumePath.Text = path;
-                                if (type == "ID") txtIdPath.Text = path;
-                                if (type == "Transcript") txtTranscriptPath.Text = path;
-                                if (type == "Certificate") txtCertificatePath.Text = path;
+
+                                if (docType.Equals("Resume", StringComparison.OrdinalIgnoreCase)) txtResumePath.Text = path;
+                                else if (docType.Equals("ID", StringComparison.OrdinalIgnoreCase)) txtIdPath.Text = path;
+                                else if (docType.Equals("Transcript", StringComparison.OrdinalIgnoreCase)) txtTranscriptPath.Text = path;
+                                else if (docType.Equals("Certificate", StringComparison.OrdinalIgnoreCase)) txtCertificatePath.Text = path;
                             }
                         }
                     }
                 }
-                CheckDocumentStatusRegistry();
             }
-            catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex.Message); }
-        }
-
-        private void CheckDocumentStatusRegistry()
-        {
-            if (!string.IsNullOrEmpty(txtResumePath.Text) && !string.IsNullOrEmpty(txtIdPath.Text))
-            {
-                lblDocStatus.Text = "Status Check: Required Documents Verified Complete";
-                lblDocStatus.Foreground = Brushes.LightGreen;
-            }
-            else
-            {
-                lblDocStatus.Text = "Status Check: Core Documents Missing (Resume + Valid ID Mandatory)";
-                lblDocStatus.Foreground = Brushes.OrangeRed;
-            }
+            catch { }
         }
 
         private void LoadClosedJobs()
         {
-            var jobRepo = new JobRepository();
-            var jobs = jobRepo.GetAllJobs();
             _closedJobsList.Items.Clear();
-            foreach (var job in jobs)
+            var jobRepo = new JobRepository();
+            var allJobs = jobRepo.GetAllJobs();
+
+            foreach (var job in allJobs)
             {
                 if (job.Status.Equals("Closed", StringComparison.OrdinalIgnoreCase))
                 {
-                    _closedJobsList.Items.Add($"Job #{job.VacancyID}: {job.JobTitle} ({job.Department})");
-                }
-            }
-        }
-
-        private int GetJobIdByTitle(string jobTitle)
-        {
-            using (var conn = DatabaseHelper.GetConnection())
-            {
-                conn.Open();
-                string query = $"SELECT VacancyID FROM {DatabaseHelper.JobTable} WHERE JobTitle = @JobTitle";
-                using (var cmd = new MySqlCommand(query, conn))
-                {
-                    cmd.Parameters.AddWithValue("@JobTitle", jobTitle);
-                    object? result = cmd.ExecuteScalar();
-                    return result != null ? Convert.ToInt32(result) : throw new Exception($"Vacancy reference tracking match missing for context label: {jobTitle}");
+                    _closedJobsList.Items.Add($"Job #{job.VacancyID}: {job.JobTitle} ({job.Department}) — [FILLED/CLOSED]");
                 }
             }
         }
@@ -670,10 +732,10 @@ namespace HR_Applicant_System.Views
                 using (var conn = DatabaseHelper.GetConnection())
                 {
                     conn.Open();
-                    string query = "SELECT COUNT(*) FROM Applications WHERE ApplicantID = @Id AND Status IN ('Submitted', 'Interview Scheduled', 'Accepted', 'Rejected')";
+                    string query = $"SELECT COUNT(*) FROM {DatabaseHelper.ApplicationTable} WHERE ApplicantID=@Aid AND Status NOT IN ('Draft', 'Rejected')";
                     using (var cmd = new MySqlCommand(query, conn))
                     {
-                        cmd.Parameters.AddWithValue("@Id", _loggedInApplicantId);
+                        cmd.Parameters.AddWithValue("@Aid", _loggedInApplicantId);
                         return Convert.ToInt32(cmd.ExecuteScalar()) > 0;
                     }
                 }
@@ -683,23 +745,21 @@ namespace HR_Applicant_System.Views
 
         private void ApplyLockState()
         {
-            bool locked = IsApplicationLocked();
-            txtContact.IsReadOnly = locked;
-            txtAddress.IsReadOnly = locked;
-            txtEducation.IsReadOnly = locked;
-            txtSkills.IsReadOnly = locked;
-            txtWorkExperience.IsReadOnly = locked;
-            _applicantBioTextBox.IsReadOnly = locked;
-            cbJobs.IsEnabled = !locked;
+            if (IsApplicationLocked())
+            {
+                lblDocStatus.Text = "Status Check: Profile Locked (HR Evaluation Underway)";
+                lblDocStatus.Foreground = Brushes.OrangeRed;
+            }
+            else
+            {
+                lblDocStatus.Text = "Status Check: Unlocked (Editing Allowed)";
+                lblDocStatus.Foreground = Brushes.LightGreen;
+            }
         }
 
         private void ShowMessage(string title, string message)
         {
-            Avalonia.Threading.Dispatcher.UIThread.Post(async () =>
-            {
-                Window dialog = new Window { Width = 400, Height = 160, Title = title, WindowStartupLocation = WindowStartupLocation.CenterOwner, Content = new TextBlock { Text = message, Margin = new Thickness(20), TextWrapping = TextWrapping.Wrap, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center } };
-                await dialog.ShowDialog(this);
-            });
+            System.Diagnostics.Debug.WriteLine($"[{title.ToUpper()}] {message}");
         }
     }
 }

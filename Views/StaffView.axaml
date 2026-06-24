@@ -5,12 +5,13 @@
         x:Class="HR_Applicant_System.Views.StaffView"
         x:DataType="vm:ApplicantListViewModel"
         Title="HR Staff Portal" 
-        Width="1000" 
-        Height="700"
+        Width="1200" 
+        Height="750"
         WindowStartupLocation="CenterScreen"
         Background="#1e1e1e">
     
     <Grid RowDefinitions="Auto,*">
+        <!-- Top Control Header Bar -->
         <Border Grid.Row="0" Background="#1F2937" Padding="15">
             <Grid ColumnDefinitions="*,Auto">
                 <StackPanel Grid.Column="0" Orientation="Vertical" VerticalAlignment="Center">
@@ -22,6 +23,15 @@
                 </StackPanel>
                 
                 <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+                    <!-- Standard Pipeline Toggle -->
+                    <Button Content="Main Pipeline" 
+                            Background="#374151" 
+                            Foreground="White" 
+                            Padding="15,7" 
+                            FontWeight="Bold"
+                            Click="MainPipeline_Click"/>
+
+                    <!-- Queue Views (Now function as inline tab switches instead of popups) -->
                     <Button Content="Final Review Queue" 
                             Background="#10B981" 
                             Foreground="White" 
@@ -46,8 +56,9 @@
             </Grid>
         </Border>
 
+        <!-- Main Workspace Body -->
         <Grid Grid.Row="1" Margin="20">
-            <views:ApplicantListView />
+            <views:ApplicantListView Name="MainApplicantList" />
         </Grid>
     </Grid>
 </Window>

@@ -5,141 +5,142 @@
         Height="650"
         Title="Admin Control Panel">
 
-	<Grid ColumnDefinitions="230,*" Background="#F3F4F6">
+      <Grid ColumnDefinitions="230,*" Background="#F3F4F6">
 
-		<!-- LEFT SIDE MENU -->
-		<Border Grid.Column="0" Background="#1F2937" Padding="20">
-			<StackPanel Spacing="12">
+            <Border Grid.Column="0" Background="#1F2937" Padding="20">
+                  <StackPanel Spacing="12">
 
-				<TextBlock Text="HR ADMIN"
+                        <TextBlock Text="HR ADMIN"
                            Foreground="White"
                            FontSize="24"
                            FontWeight="Bold"
                            Margin="0,0,0,20"/>
 
-				<Button Content="Dashboard"
+                        <Button Content="Dashboard"
                         Height="42"
                         Click="Dashboard_Click"/>
 
-				<Button Content="Create HR Staff Account"
+                        <Button Content="Create HR Staff Account"
                         Height="42"
                         Click="CreateStaff_Click"/>
 
-				<Button Content="Create Job Vacancy"
+                        <Button Content="Create Job Vacancy"
                         Height="42"
                         Click="CreateJob_Click"/>
 
-				<Button Content="Staff Approved Queue"
+                        <Button Content="Delete Job Vacancy"
+                        Height="42"
+                        Background="#DC2626"
+                        Foreground="White"
+                        FontWeight="Bold"
+                        Click="DeleteJob_Click"/>
+
+                        <Button Content="Staff Approved Queue"
                         Height="42"
                         Click="FinalReview_Click"/>
 
-				<Button Content="Staff Rejected Queue"
+                        <Button Content="Staff Rejected Queue"
                         Height="42"
                         Click="RejectedQueue_Click"/>
 
-				<Button Content="Reports"
+                        <Button Content="Reports"
                         Height="42"
                         Click="Reports_Click"/>
 
-				<Button Content="Logout"
+                        <Button Content="Logout"
                         Height="42"
                         Margin="0,30,0,0"
                         Click="Logout_Click"/>
 
-			</StackPanel>
-		</Border>
+                  </StackPanel>
+            </Border>
 
-		<!-- MAIN CONTENT AREA -->
-		<Grid Grid.Column="1" RowDefinitions="90,*">
+            <Grid Grid.Column="1" RowDefinitions="90,*">
 
-			<!-- HEADER -->
-			<Border Grid.Row="0" Background="White" Padding="25">
-				<StackPanel>
-					<TextBlock Text="Admin / Manager Dashboard"
+                  <Border Grid.Row="0" Background="White" Padding="25">
+                        <StackPanel>
+                              <TextBlock Text="Admin / Manager Dashboard"
                                FontSize="28"
                                FontWeight="Bold"
                                Foreground="#111827"/>
 
-					<TextBlock Text="System oversight active."
+                              <TextBlock Text="System oversight active."
                                FontSize="15"
                                Foreground="#6B7280"/>
-				</StackPanel>
-			</Border>
+                        </StackPanel>
+                  </Border>
 
-			<!-- DASHBOARD CONTENT -->
-			<ScrollViewer Grid.Row="1">
-				<StackPanel Margin="25" Spacing="20">
+                  <ScrollViewer Grid.Row="1">
+                        <StackPanel Margin="25" Spacing="20">
 
-					<TextBlock Text="Welcome, Admin / Manager"
+                              <TextBlock Text="Welcome, Admin / Manager"
                                FontSize="24"
                                FontWeight="Bold"
                                Foreground="#111827"/>
 
-					<TextBlock Text="Use this dashboard to create HR staff accounts, publish job vacancies, review staff-approved applicants, and monitor staff-rejected applications."
+                              <TextBlock Text="Use this dashboard to create HR staff accounts, publish job vacancies, review staff-approved applicants, and monitor staff-rejected applications."
                                FontSize="16"
                                TextWrapping="Wrap"
                                Foreground="#374151"/>
 
-					<!-- SUMMARY CARDS -->
-					<Grid ColumnDefinitions="*,*,*" ColumnSpacing="15">
+                              <Grid ColumnDefinitions="*,*,*" ColumnSpacing="15">
 
-						<Border Grid.Column="0"
+                                    <Border Grid.Column="0"
                                 Background="White"
                                 CornerRadius="10"
                                 Padding="20">
-							<StackPanel>
-								<TextBlock Text="Active Jobs"
+                                          <StackPanel>
+                                                <TextBlock Text="Active Jobs"
                                            FontSize="16"
                                            Foreground="#6B7280"/>
 
-								<TextBlock x:Name="txtActiveJobsCount"
+                                                <TextBlock x:Name="txtActiveJobsCount"
                                            Text="0"
                                            FontSize="32"
                                            FontWeight="Bold"
                                            Foreground="#111827"/>
-							</StackPanel>
-						</Border>
+                                          </StackPanel>
+                                    </Border>
 
-						<Border Grid.Column="1"
+                                    <Border Grid.Column="1"
                                 Background="White"
                                 CornerRadius="10"
                                 Padding="20">
-							<StackPanel>
-								<TextBlock Text="For Final Review"
+                                          <StackPanel>
+                                                <TextBlock Text="For Final Review"
                                            FontSize="16"
                                            Foreground="#6B7280"/>
 
-								<TextBlock x:Name="txtFinalReviewCount"
+                                                <TextBlock x:Name="txtFinalReviewCount"
                                            Text="0"
                                            FontSize="32"
                                            FontWeight="Bold"
                                            Foreground="#111827"/>
-							</StackPanel>
-						</Border>
+                                          </StackPanel>
+                                    </Border>
 
-						<Border Grid.Column="2"
+                                    <Border Grid.Column="2"
                                 Background="White"
                                 CornerRadius="10"
                                 Padding="20">
-							<StackPanel>
-								<TextBlock Text="Rejected by Staff"
+                                          <StackPanel>
+                                                <TextBlock Text="Rejected by Staff"
                                            FontSize="16"
                                            Foreground="#6B7280"/>
 
-								<TextBlock x:Name="txtRejectedCount"
+                                                <TextBlock x:Name="txtRejectedCount"
                                            Text="0"
                                            FontSize="32"
                                            FontWeight="Bold"
                                            Foreground="#111827"/>
-							</StackPanel>
-						</Border>
+                                          </StackPanel>
+                                    </Border>
 
-					</Grid>
+                              </Grid>
 
-				</StackPanel>
-			</ScrollViewer>
+                        </StackPanel>
+                  </ScrollViewer>
 
-		</Grid>
-	</Grid>
+            </Grid>
+      </Grid>
 </Window>
-
